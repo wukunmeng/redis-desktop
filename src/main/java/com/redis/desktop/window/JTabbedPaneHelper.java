@@ -12,7 +12,6 @@ import java.awt.BorderLayout;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -61,6 +60,7 @@ public class JTabbedPaneHelper {
 		columnModel.addColumn(value);
 		DefaultTableModel data = new DefaultTableModel();
 		System.getenv().forEach((k,v) -> data.addRow(new Object[] {k, v}));
+		
 		JTable table = new JTable(data, columnModel);
 		table.setFillsViewportHeight(true);
 		return table;

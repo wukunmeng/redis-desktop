@@ -9,6 +9,7 @@
 package com.redis.desktop.window;
 
 import java.awt.Dimension;
+import java.awt.EventQueue;
 
 import javax.annotation.PostConstruct;
 import javax.swing.ImageIcon;
@@ -34,9 +35,11 @@ import java.awt.BorderLayout;
  * @see 	 
  */
 @Component
-public class MainFrame extends JFrame{
+public class MainFrame{
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private JFrame frame = new JFrame();
 	
 	@Value("${spring.main.frame.icon}")
 	private String iconImagePath = "";
@@ -58,28 +61,24 @@ public class MainFrame extends JFrame{
 	
 	@Autowired
 	private JTabbedPaneHelper jTabbedPaneHelper;
-
-	/**
-	 * serialVersionUID:TODO(用一句话描述这个变量表示什么).
-	 * @since JDK 1.8
-	 */
-	private static final long serialVersionUID = 1L;
 	
 	@PostConstruct
 	public void initialize() {
-		setTitle(title);
-		setJMenuBar(topMenuBar);
-		ImageIcon imageIcon = new ImageIcon(iconImagePath);
-		setIconImage(imageIcon.getImage());
-		setSize(new Dimension(width, height));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setLeftComponent(tree.tree());
-		splitPane.setRightComponent(jTabbedPaneHelper.tabbedPane());
-		getContentPane().add(splitPane, BorderLayout.CENTER);
-		setLocationRelativeTo(null);
-		setVisible(true);
-		splitPane.setDividerLocation(0.2);
+		//EventQueue.invokeLater(()->{
+			frame.setTitle(title);
+			frame.setJMenuBar(topMenuBar);
+			ImageIcon imageIcon = new ImageIcon(iconImagePath);
+			frame.setIconImage(imageIcon.getImage());
+			frame.setSize(new Dimension(width, height));
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			JSplitPane splitPane = new JSplitPane();
+			splitPane.setLeftComponent(tree.tree());
+			splitPane.setRightComponent(jTabbedPaneHelper.tabbedPane());
+			frame.getContentPane().add(splitPane, BorderLayout.CENTER);
+			frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
+			splitPane.setDividerLocation(0.2);
+		//});
 	}
 	/**
 	 * Create the application.
