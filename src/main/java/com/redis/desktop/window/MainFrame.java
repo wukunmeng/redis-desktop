@@ -55,6 +55,9 @@ public class MainFrame extends JFrame{
 	
 	@Autowired
 	private Tree tree;
+	
+	@Autowired
+	private JTabbedPaneHelper jTabbedPaneHelper;
 
 	/**
 	 * serialVersionUID:TODO(用一句话描述这个变量表示什么).
@@ -72,6 +75,7 @@ public class MainFrame extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setLeftComponent(tree.tree());
+		splitPane.setRightComponent(jTabbedPaneHelper.tabbedPane());
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 		setLocationRelativeTo(null);
 		setVisible(true);
