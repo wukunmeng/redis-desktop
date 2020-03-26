@@ -10,7 +10,6 @@ package com.redis.desktop.boot;
 
 import java.awt.EventQueue;
 
-import com.alee.laf.WebLookAndFeel;
 import com.redis.desktop.util.SpringContextUtil;
 import com.redis.desktop.window.MainFrame;
 
@@ -28,7 +27,12 @@ public class ViewStarter {
 
 	public static void run() {
 		EventQueue.invokeLater(()-> {
-			WebLookAndFeel.install();
+//			WebLookAndFeel.install();
+//			try {
+//				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//			}
 			SpringContextUtil.getBean(MainFrame.class).showWindow();
 		});
 	}
