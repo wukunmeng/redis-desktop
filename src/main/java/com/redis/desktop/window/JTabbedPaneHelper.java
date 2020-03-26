@@ -12,14 +12,13 @@ import java.awt.BorderLayout;
 import java.util.Vector;
 
 import javax.annotation.PostConstruct;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.JToolBar;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -40,13 +39,19 @@ public class JTabbedPaneHelper {
 	@Value("${spring.tree.open.icon}")
 	private String homeTabIcon = "";
 	
+	@Value("${spring.tool.bar.query.icon}")
+	private String queryToolIcon = "";
+	
 	private JTabbedPane tab;
 	
 	@PostConstruct
 	public void initialize() {
+		JToolBar toolBar = new JToolBar();
+		toolBar.add(new JButton(new ImageIcon(queryToolIcon)));
 		tab = new JTabbedPane(JTabbedPane.TOP);
 		JPanel panel = new JPanel(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane(table());
+		panel.add(toolBar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
 		tab.addTab("首页", panel);
 	}
