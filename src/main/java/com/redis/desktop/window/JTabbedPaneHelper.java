@@ -21,7 +21,10 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import com.redis.desktop.component.CommonComponent;
 
 /**
  * ClassName:JTabbedPaneHelper <br/>
@@ -34,20 +37,20 @@ import org.springframework.stereotype.Component;
  * @see 	 
  */
 @Component
-public class JTabbedPaneHelper {
+public class JTabbedPaneHelper extends CommonComponent{
 
 	@Value("${spring.tree.open.icon}")
 	private String homeTabIcon = "";
 	
-	@Value("${spring.tool.bar.query.icon}")
-	private String queryToolIcon = "";
+	@Value("classpath:icons/icon_system-users_64.png")
+	private Resource queryToolFileIcon;
 	
 	private JTabbedPane tab;
 	
 	@PostConstruct
 	public void initialize() {
 		JToolBar toolBar = new JToolBar();
-		toolBar.add(new JButton(new ImageIcon(queryToolIcon)));
+		toolBar.add(new JButton(createImageIcon(queryToolFileIcon)));
 		tab = new JTabbedPane(JTabbedPane.TOP);
 		JPanel panel = new JPanel(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane(table());
@@ -56,7 +59,7 @@ public class JTabbedPaneHelper {
 		tab.addTab("系统环境变量", panel);
 		
 		JToolBar bar = new JToolBar();
-		bar.add(new JButton(new ImageIcon(queryToolIcon)));
+		bar.add(new JButton(new ImageIcon(homeTabIcon)));
 		JPanel propertyPanel = new JPanel(new BorderLayout());
 		JScrollPane propertyScrollPane = new JScrollPane(property());
 		propertyPanel.add(bar, BorderLayout.NORTH);
