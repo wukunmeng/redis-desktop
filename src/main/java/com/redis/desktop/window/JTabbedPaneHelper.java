@@ -53,7 +53,15 @@ public class JTabbedPaneHelper {
 		JScrollPane scrollPane = new JScrollPane(table());
 		panel.add(toolBar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab("首页", panel);
+		tab.addTab("系统环境变量", panel);
+		
+		JToolBar bar = new JToolBar();
+		bar.add(new JButton(new ImageIcon(queryToolIcon)));
+		JPanel propertyPanel = new JPanel(new BorderLayout());
+		JScrollPane propertyScrollPane = new JScrollPane(property());
+		propertyPanel.add(bar, BorderLayout.NORTH);
+		propertyPanel.add(propertyScrollPane, BorderLayout.CENTER);
+		tab.addTab("系统属性", propertyPanel);
 	}
 	
 	private JTable table() {
@@ -65,6 +73,24 @@ public class JTabbedPaneHelper {
 			Vector<String> row = new Vector<String>();
 			row.addElement(k);
 			row.addElement(v);
+			data.addElement(row);
+		});
+		
+		JTable table = new JTable(data, columnNames);
+		table.setFillsViewportHeight(true);
+		return table;
+	}
+	
+	
+	private JTable property() {
+		Vector<String> columnNames = new Vector<String>();
+		columnNames.addElement("键");
+		columnNames.addElement("值");
+		Vector<Vector<String>> data = new Vector<Vector<String>>();
+		System.getProperties().keySet().forEach(k -> {
+			Vector<String> row = new Vector<String>();
+			row.addElement(String.valueOf(k));
+			row.addElement(System.getProperty(String.valueOf(k)));
 			data.addElement(row);
 		});
 		

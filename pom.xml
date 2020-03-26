@@ -8,16 +8,21 @@
 	<version>1.0</version>
 	<name>common</name>
 	<url>http://maven.apache.org</url>
-	
+
 	<properties>
 		<spring-boot-version>2.1.13.RELEASE</spring-boot-version>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 			<version>${spring-boot-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.weblookandfeel</groupId>
+			<artifactId>weblaf-ui</artifactId>
+			<version>1.2.12</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
