@@ -9,6 +9,7 @@
 package com.redis.desktop.window;
 
 import java.awt.BorderLayout;
+import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JPanel;
@@ -51,17 +52,18 @@ public class JTabbedPaneHelper {
 	}
 	
 	private JTable table() {
-		TableColumnModel columnModel = new DefaultTableColumnModel();
-		TableColumn key = new TableColumn();
-		key.setHeaderValue("键");
-		TableColumn value = new TableColumn();
-		value.setHeaderValue("值");
-		columnModel.addColumn(key);
-		columnModel.addColumn(value);
-		DefaultTableModel data = new DefaultTableModel();
-		System.getenv().forEach((k,v) -> data.addRow(new Object[] {k, v}));
+		Vector<String> columnNames = new Vector<String>();
+		columnNames.addElement("键");
+		columnNames.addElement("值");
+		Vector<Vector<String>> data = new Vector<Vector<String>>();
+		System.getenv().forEach((k,v) -> {
+			Vector<String> row = new Vector<String>();
+			row.addElement(k);
+			row.addElement(v);
+			data.addElement(row);
+		});
 		
-		JTable table = new JTable(data, columnModel);
+		JTable table = new JTable(data, columnNames);
 		table.setFillsViewportHeight(true);
 		return table;
 	}
