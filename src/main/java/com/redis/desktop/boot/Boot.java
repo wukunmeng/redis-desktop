@@ -29,6 +29,7 @@ public class Boot {
 
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(Boot.class).web(WebApplicationType.NONE).headless(false).run(args);
+		ViewStarter.run();
 	}
 
 }
