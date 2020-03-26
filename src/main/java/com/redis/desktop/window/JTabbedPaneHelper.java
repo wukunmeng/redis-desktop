@@ -12,7 +12,6 @@ import java.awt.BorderLayout;
 import java.util.Vector;
 
 import javax.annotation.PostConstruct;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -39,10 +38,10 @@ import com.redis.desktop.component.CommonComponent;
 @Component
 public class JTabbedPaneHelper extends CommonComponent{
 
-	@Value("${spring.tree.open.icon}")
-	private String homeTabIcon = "";
+	@Value("classpath:icons/icon_system-log-out_16.png")
+	private Resource homeTabIcon;
 	
-	@Value("classpath:icons/icon_system-users_64.png")
+	@Value("classpath:icons/icon_system-users_16.png")
 	private Resource queryToolFileIcon;
 	
 	private JTabbedPane tab;
@@ -59,7 +58,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		tab.addTab("系统环境变量", panel);
 		
 		JToolBar bar = new JToolBar();
-		bar.add(new JButton(new ImageIcon(homeTabIcon)));
+		bar.add(new JButton(createImageIcon(homeTabIcon)));
 		JPanel propertyPanel = new JPanel(new BorderLayout());
 		JScrollPane propertyScrollPane = new JScrollPane(property());
 		propertyPanel.add(bar, BorderLayout.NORTH);
