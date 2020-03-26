@@ -10,6 +10,8 @@ package com.redis.desktop.boot;
 
 import java.awt.EventQueue;
 
+import javax.swing.UIManager;
+
 import com.redis.desktop.util.SpringContextUtil;
 import com.redis.desktop.window.MainFrame;
 
@@ -28,11 +30,11 @@ public class ViewStarter {
 	public static void run() {
 		EventQueue.invokeLater(()-> {
 //			WebLookAndFeel.install();
-//			try {
-//				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
+			try {
+				UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 			SpringContextUtil.getBean(MainFrame.class).showWindow();
 		});
 	}
