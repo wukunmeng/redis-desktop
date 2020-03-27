@@ -9,15 +9,16 @@
 package com.redis.desktop.window;
 
 import javax.annotation.PostConstruct;
-import javax.swing.ImageIcon;
 import javax.swing.JTree;
-import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import com.redis.desktop.component.CommonComponent;
 
 /**
  * ClassName:Tree <br/>
@@ -31,22 +32,22 @@ import org.springframework.stereotype.Component;
  * @see
  */
 @Component
-public class Tree {
+public class Tree extends CommonComponent {
 
-	@Value("${spring.tree.open.icon}")
-	private String openIconImagePath = "";
+	@Value("classpath:icons/icon_expand_16.png")
+	private Resource expandIconFile;
 	
-	@Value("${spring.tree.closed.icon}")
-	private String closedIconImagePath = "";
+	@Value("classpath:icons/icon_collapse_16.png")
+	private Resource collapseIconFile;
 	
-	@Value("${spring.tree.leaf.icon}")
-	private String leafIconImagePath = "";
+	@Value("classpath:icons/icon_open_16.png")
+	private Resource openIconFile;
 	
-	@Value("${spring.tree.collapsed.icon}")
-	private String collapsedImagePath = "";
+	@Value("classpath:icons/icon_close_16.png")
+	private Resource closeIconFile;
 	
-	@Value("${spring.tree.expanded.icon}")
-	private String expandedImagePath = "";
+	@Value("classpath:icons/icon_tree-leaf_16.png")
+	private Resource leafIconFile;
 	
 	private JTree tree;
 
@@ -58,22 +59,22 @@ public class Tree {
 		}
 		tree = new JTree(root);
 		treeCellRenderer((DefaultTreeCellRenderer) tree.getCellRenderer());
-		treeUI((BasicTreeUI)tree.getUI());
+		//treeUI((BasicTreeUI)tree.getUI());
 		tree.collapsePath(new TreePath(root.getRoot()));
 		
 	}
 	
 	private void treeCellRenderer(DefaultTreeCellRenderer treeCellRenderer) {
-		treeCellRenderer.setOpenIcon(new ImageIcon(openIconImagePath));
-		treeCellRenderer.setClosedIcon(new ImageIcon(closedIconImagePath));
-		treeCellRenderer.setLeafIcon(new ImageIcon(leafIconImagePath));
+		treeCellRenderer.setOpenIcon(createImageIcon(openIconFile));
+		treeCellRenderer.setClosedIcon(createImageIcon(closeIconFile));
+		treeCellRenderer.setLeafIcon(createImageIcon(leafIconFile));
 		//treeCellRenderer.setIcon(new ImageIcon(leafIconImagePath));
 	}
 	
-	private void treeUI(BasicTreeUI treeUI) {
-		treeUI.setCollapsedIcon(new ImageIcon(collapsedImagePath));
-		treeUI.setExpandedIcon(new ImageIcon(expandedImagePath));
-	}
+//	private void treeUI(BasicTreeUI treeUI) {
+//		treeUI.setCollapsedIcon(createImageIcon(collapseIconFile));
+//		treeUI.setExpandedIcon(createImageIcon(expandIconFile));
+//	}
 
 	public JTree tree() {
 		return tree;
