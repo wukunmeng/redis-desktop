@@ -9,6 +9,7 @@
 package com.redis.desktop.window;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Vector;
 
 import javax.annotation.PostConstruct;
@@ -44,6 +45,9 @@ public class JTabbedPaneHelper extends CommonComponent{
 	@Value("classpath:icons/icon_system-users_16.png")
 	private Resource queryToolFileIcon;
 	
+	@Value("classpath:icons/icon_letter-x-blue_16.png")
+	private Resource closeTabIconFile;
+	
 	private JTabbedPane tab;
 	
 	@PostConstruct
@@ -55,7 +59,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JScrollPane scrollPane = new JScrollPane(table());
 		panel.add(toolBar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab("系统环境变量", panel);
+		tab.addTab("系统环境变量", createImageIcon(closeTabIconFile), panel);
 		
 		JToolBar bar = new JToolBar();
 		bar.add(new JButton(createImageIcon(homeTabIcon)));
@@ -63,7 +67,10 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JScrollPane propertyScrollPane = new JScrollPane(property());
 		propertyPanel.add(bar, BorderLayout.NORTH);
 		propertyPanel.add(propertyScrollPane, BorderLayout.CENTER);
-		tab.addTab("系统属性", propertyPanel);
+		JButton closeButton = new JButton(createImageIcon(closeTabIconFile));
+		closeButton.setSize(new Dimension(18,18));
+		tab.setTabComponentAt(0, closeButton);
+		tab.addTab("系统属性", createImageIcon(closeTabIconFile), propertyPanel);
 	}
 	
 	private JTable table() {
