@@ -9,7 +9,6 @@
 package com.redis.desktop.window;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.Vector;
 
 import javax.annotation.PostConstruct;
@@ -59,7 +58,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JScrollPane scrollPane = new JScrollPane(table());
 		panel.add(toolBar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab("系统环境变量", createImageIcon(closeTabIconFile), panel);
+		tab.addTab("首页", createImageIcon(closeTabIconFile), panel);
 		
 		JToolBar bar = new JToolBar();
 		bar.add(new JButton(createImageIcon(homeTabIcon)));
@@ -67,10 +66,19 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JScrollPane propertyScrollPane = new JScrollPane(property());
 		propertyPanel.add(bar, BorderLayout.NORTH);
 		propertyPanel.add(propertyScrollPane, BorderLayout.CENTER);
-		JButton closeButton = new JButton(createImageIcon(closeTabIconFile));
-		closeButton.setSize(new Dimension(18,18));
-		tab.setTabComponentAt(0, closeButton);
-		tab.addTab("系统属性", createImageIcon(closeTabIconFile), propertyPanel);
+		tab.add(propertyPanel, 1);
+		TabPane tabOne = new TabPane("系统属性", createImageIcon(closeTabIconFile));
+		tab.setTabComponentAt(1, tabOne);
+//		tab.addChangeListener((e) -> {
+//			if(e.getSource() instanceof TabPane) {
+//				((TabPane)e.getSource()).selected();
+//			}
+//			for(int i = 0; i < tab.getTabCount(); i++) {
+//				if(tab.getTabComponentAt(i) != e.getSource()) {
+//					tab.getTabComponentAt(i).setBackground(Color.BLACK);
+//				}
+//			}
+//		});
 	}
 	
 	private JTable table() {
