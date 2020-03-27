@@ -38,7 +38,7 @@ import com.redis.desktop.component.CommonComponent;
 @Component
 public class JTabbedPaneHelper extends CommonComponent{
 
-	@Value("classpath:icons/icon_system-log-out_16.png")
+	@Value("classpath:icons/icon_home_16.png")
 	private Resource homeTabIcon;
 	
 	@Value("classpath:icons/icon_system-users_16.png")
@@ -58,7 +58,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JScrollPane scrollPane = new JScrollPane(table());
 		panel.add(toolBar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab("首页", createImageIcon(closeTabIconFile), panel);
+		tab.addTab("首页", createImageIcon(homeTabIcon), panel);
 		
 		JToolBar bar = new JToolBar();
 		bar.add(new JButton(createImageIcon(homeTabIcon)));
