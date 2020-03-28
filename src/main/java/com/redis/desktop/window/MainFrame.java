@@ -12,13 +12,11 @@ import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
@@ -34,7 +32,6 @@ import java.awt.BorderLayout;
  * @see 	 
  */
 @Component
-@Scope("prototype")
 public class MainFrame extends JFrame{
 	
 	/**
@@ -54,8 +51,8 @@ public class MainFrame extends JFrame{
 	@Value("${spring.main.frame.height}")
 	private Integer height = 1024;
 	
-	@Autowired
-	private JMenuBar topMenuBar;
+//	@Autowired
+//	private JMenuBar topMenuBar;
 	
 	@Value("${spring.main.frame.title:桌面程序}")
 	private String title;
@@ -66,9 +63,12 @@ public class MainFrame extends JFrame{
 	@Autowired
 	private JTabbedPaneHelper jTabbedPaneHelper;
 	
+	@Autowired
+	private FrameToolBarHelper frameToolBarHelper;
+	
 	public void showWindow() {
 		setTitle(title);
-		setJMenuBar(topMenuBar);
+		//setJMenuBar(topMenuBar);
 		ImageIcon imageIcon = new ImageIcon(iconImagePath);
 		setIconImage(imageIcon.getImage());
 		setSize(new Dimension(width, height));
@@ -76,6 +76,7 @@ public class MainFrame extends JFrame{
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setLeftComponent(tree.tree());
 		splitPane.setRightComponent(jTabbedPaneHelper.tabbedPane());
+		getContentPane().add(frameToolBarHelper.toolBar(), BorderLayout.NORTH);
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 		setLocationRelativeTo(null);
 		setVisible(true);
