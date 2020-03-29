@@ -4,6 +4,9 @@ import java.awt.EventQueue;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
 
 public class Boot {
 
@@ -43,6 +46,8 @@ public class Boot {
 			ImageIcon imageIcon = new ImageIcon("/opt/software/firefox/browser/chrome/icons/default/default128.png");
 			frame.setIconImage(imageIcon.getImage());
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.getContentPane().setLayout(new FormLayout(new ColumnSpec[] {},
+				new RowSpec[] {}));
 		} catch (Exception e) {
 			
 		}

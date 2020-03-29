@@ -23,11 +23,16 @@ import javax.swing.ImageIcon;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
 
-public abstract class CommonComponent {
+public abstract class CommonComponent implements ApplicationContextAware {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private ApplicationContext applicationContext;
 	
 	protected ImageIcon createImageIcon(Resource resource) {
 		try {
@@ -36,6 +41,16 @@ public abstract class CommonComponent {
 			logger.error("IOException:{}", e.getMessage());
 		}
 		return null;
+	}
+	
+	@Override
+	public final void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		// TODO Auto-generated method stub
+		this.applicationContext = applicationContext;
+	}
+	
+	public <T> T getBean(Class<T> requiredType){
+		return this.applicationContext.getBean(requiredType);
 	}
 }
 

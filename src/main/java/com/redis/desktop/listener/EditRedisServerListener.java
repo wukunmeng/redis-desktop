@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.window.MainFrame;
+import com.redis.desktop.window.RedisEditFrame;
 
 /**
  * ClassName:EditRedisServerListener <br/>
@@ -40,6 +41,7 @@ public class EditRedisServerListener extends AbstractListener implements ActionL
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		JOptionPane.showMessageDialog(frame, "准备实现", "显示信息提示框", JOptionPane.QUESTION_MESSAGE);
+		getBean(RedisEditFrame.class).showWindow();
 	}
 
 }
