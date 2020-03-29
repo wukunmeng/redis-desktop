@@ -12,6 +12,7 @@ import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class MainFrame extends JFrame{
 		setSize(new Dimension(width, height));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JSplitPane splitPane = new JSplitPane();
-		splitPane.setLeftComponent(tree.tree());
+		splitPane.setLeftComponent(new JScrollPane(tree.tree()));
 		splitPane.setRightComponent(jTabbedPaneHelper.tabbedPane());
 		getContentPane().add(frameToolBarHelper.toolBar(), BorderLayout.NORTH);
 		getContentPane().add(splitPane, BorderLayout.CENTER);

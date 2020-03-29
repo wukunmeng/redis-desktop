@@ -11,13 +11,11 @@ package com.redis.desktop.listener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JOptionPane;
+import javax.swing.JButton;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.redis.desktop.window.MainFrame;
 import com.redis.desktop.window.RedisEditFrame;
 
 /**
@@ -33,15 +31,13 @@ import com.redis.desktop.window.RedisEditFrame;
 @Component
 @Scope("prototype")
 public class EditRedisServerListener extends AbstractListener implements ActionListener{
-
-	@Autowired
-	private MainFrame frame;
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		JOptionPane.showMessageDialog(frame, "准备实现", "显示信息提示框", JOptionPane.QUESTION_MESSAGE);
-		getBean(RedisEditFrame.class).showWindow();
+		if(e.getSource() instanceof JButton) {
+			getBean(RedisEditFrame.class).showWindow();
+		}
 	}
 
 }
