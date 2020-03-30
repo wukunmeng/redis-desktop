@@ -8,6 +8,11 @@
 
 package com.redis.desktop.boot;
 
+import java.awt.Font;
+import java.util.Enumeration;
+
+import javax.swing.UIManager;
+
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -28,6 +33,23 @@ import org.springframework.context.annotation.ComponentScan;
 public class Boot {
 
 	public static void main(String[] args) {
+		try {
+			Font font = new Font(Font.MONOSPACED, Font.BOLD, 16);
+	        Enumeration<Object> keys = UIManager.getDefaults().keys();
+	        while (keys.hasMoreElements()) {
+	            Object key = keys.nextElement();
+	            Object value = UIManager.get(key);
+	            if (value instanceof javax.swing.plaf.FontUIResource) {
+	                UIManager.put(key, font);
+	            }
+	        }
+	        //WebLookAndFeel.install();
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
 		new SpringApplicationBuilder(Boot.class).web(WebApplicationType.NONE).headless(false).run(args);
 		ViewStarter.run();
 	}

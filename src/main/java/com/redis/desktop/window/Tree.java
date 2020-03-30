@@ -76,7 +76,7 @@ public class Tree extends CommonComponent {
 		for(String name:listDataFile()) {
 			logger.info("name:{}", name);
 			RedisNodeModel node = readObject(name);
-			root.add(new DefaultMutableTreeNode(node.getAddress()));
+			root.add(new DefaultMutableTreeNode(node));
 			redisInfoStore.add(node.getAddress(), node);
 		}
 		tree = new JTree(root);
@@ -95,7 +95,12 @@ public class Tree extends CommonComponent {
 						return;
 					}
 					DefaultMutableTreeNode currentTreeNode = (DefaultMutableTreeNode)o;
-					RedisNodeModel node = redisInfoStore.getRedis(currentTreeNode.toString());
+					if(!(currentTreeNode.getUserObject() instanceof RedisNodeModel)) {
+						logger.info("click:{}", currentTreeNode.getUserObject().toString());
+						return;
+					}
+					RedisNodeModel redisNode = (RedisNodeModel)currentTreeNode.getUserObject();
+					RedisNodeModel node = redisInfoStore.getRedis(redisNode.getAddress());
 					try {
 						if(node != null && currentTreeNode.getChildCount() < 1) {
 							Jedis client = new Jedis(node.getAddress(), node.getPort());
@@ -117,7 +122,8 @@ public class Tree extends CommonComponent {
 								String dbIndex = StringUtils.leftPad(String.valueOf(i), len, "0");
 								((DefaultTreeModel)tree.getModel()).insertNodeInto(new DefaultMutableTreeNode("db-" + dbIndex), currentTreeNode, currentTreeNode.getChildCount());
 							}
-							currentTreeNode.setUserObject(node.getAddress() + "--" + "connect");
+							redisNode.setConnect(true);
+							//currentTreeNode.setUserObject(node.getAddress() + "--" + "connect");
 						}
 					} catch (Exception ex) {
 						logger.error("connect:{}, exception:{}", currentTreeNode, ex.getMessage());

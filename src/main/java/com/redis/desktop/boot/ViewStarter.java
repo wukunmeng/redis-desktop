@@ -9,6 +9,8 @@
 package com.redis.desktop.boot;
 
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.util.Enumeration;
 
 import javax.swing.UIManager;
 
@@ -29,12 +31,6 @@ public class ViewStarter {
 
 	public static void run() {
 		EventQueue.invokeLater(()-> {
-//			WebLookAndFeel.install();
-			try {
-				UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
 			SpringContextUtil.getBean(MainFrame.class).showWindow();
 		});
 	}

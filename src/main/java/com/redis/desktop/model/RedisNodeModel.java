@@ -10,6 +10,8 @@ package com.redis.desktop.model;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * ClassName:RedisNodeModel <br/>
  * Function: TODO ADD FUNCTION. <br/>
@@ -27,6 +29,10 @@ public class RedisNodeModel implements Serializable{
 	 * @since JDK 1.8
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private String name;
+	
+	private boolean connect = false;
 
 	private String address;
 	
@@ -66,6 +72,38 @@ public class RedisNodeModel implements Serializable{
 
 	public void setAuthorization(String authorization) {
 		this.authorization = authorization;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public boolean isConnect() {
+		return connect;
+	}
+
+	public void setConnect(boolean connect) {
+		this.connect = connect;
+	}
+
+	public String toString() {
+		StringBuilder showName = new StringBuilder();
+		if(StringUtils.isBlank(this.name)) {
+			showName.append(this.getAddress());
+		} else {
+			showName.append(this.name);
+		}
+		showName.append(" ");
+		if(isConnect()) {
+			showName.append("📡"); 
+		} else {
+			showName.append("🔗"); 
+		}
+		return showName.toString();
 	}
 }
 
