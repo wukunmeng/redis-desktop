@@ -34,6 +34,8 @@ public class Boot {
 
 	public static void main(String[] args) {
 		try {
+//			System.setProperty("awt.useSystemAAFontSettings", "on"); 
+//			System.setProperty("swing.aatext", "true");
 			Font font = new Font(Font.MONOSPACED, Font.BOLD, 16);
 	        Enumeration<Object> keys = UIManager.getDefaults().keys();
 	        while (keys.hasMoreElements()) {
