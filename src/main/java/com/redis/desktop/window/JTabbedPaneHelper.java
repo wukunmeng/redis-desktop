@@ -9,6 +9,7 @@
 package com.redis.desktop.window;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
@@ -55,24 +56,25 @@ public class JTabbedPaneHelper extends CommonComponent{
 	
 	@PostConstruct
 	public void initialize() {
-		JToolBar toolBar = new JToolBar();
-		toolBar.add(new JButton(createImageIcon(queryToolFileIcon)));
-		tab = new JTabbedPane(JTabbedPane.TOP);
-		JPanel panel = new JPanel(new BorderLayout());
-		JScrollPane scrollPane = new JScrollPane(table());
-		panel.add(toolBar, BorderLayout.NORTH);
-		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab("首页", createImageIcon(homeTabIcon), panel);
-		
 		JToolBar bar = new JToolBar();
 		bar.add(new JButton(createImageIcon(homeTabIcon)));
+		bar.add(new JButton(createImageIcon(queryToolFileIcon)));
+		
+		tab = new JTabbedPane(JTabbedPane.TOP);
+		Font tabFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
+		tab.setFont(tabFont);
 		JPanel propertyPanel = new JPanel(new BorderLayout());
 		JScrollPane propertyScrollPane = new JScrollPane(property());
-		propertyPanel.add(bar, BorderLayout.NORTH);
 		propertyPanel.add(propertyScrollPane, BorderLayout.CENTER);
-		tab.add(propertyPanel, 1);
-		TabPane tabOne = new TabPane("系统属性", createImageIcon(closeTabIconFile));
-		tab.setTabComponentAt(1, tabOne);
+		tab.addTab("首页", createImageIcon(homeTabIcon), propertyPanel);
+		
+		JPanel panel = new JPanel(new BorderLayout());
+		JScrollPane scrollPane = new JScrollPane(table());
+		panel.add(bar, BorderLayout.NORTH);
+		panel.add(scrollPane, BorderLayout.CENTER);
+		tab.addTab("系统属性", createImageIcon(closeTabIconFile), panel);
+		//TabPane tabOne = new TabPane("系统属性", createImageIcon(closeTabIconFile));
+		//tab.setTabComponentAt(1, tabOne);
 //		tab.addChangeListener((e) -> {
 //			if(e.getSource() instanceof TabPane) {
 //				((TabPane)e.getSource()).selected();
@@ -85,9 +87,13 @@ public class JTabbedPaneHelper extends CommonComponent{
 //		});
 		JPopupMenu m = new JPopupMenu();
 		JMenuItem pupop = new JMenuItem("关闭");
+		pupop.setFont(new Font(Font.MONOSPACED, Font.BOLD, 13));
 		m.add(pupop);
 		pupop.addActionListener((e)->{
-			tab.remove(tab.getSelectedIndex());
+			int index = tab.getSelectedIndex();
+			if(index > 0) {
+				tab.remove(tab.getSelectedIndex());
+			}
 			m.setVisible(false);
 		});
 		tab.addMouseListener(new MouseAdapter() {
@@ -105,8 +111,8 @@ public class JTabbedPaneHelper extends CommonComponent{
 	
 	private JTable table() {
 		Vector<String> columnNames = new Vector<String>();
-		columnNames.addElement("键");
-		columnNames.addElement("值");
+		columnNames.addElement("环境变量");
+		columnNames.addElement("环境变量值");
 		Vector<Vector<String>> data = new Vector<Vector<String>>();
 		System.getenv().forEach((k,v) -> {
 			Vector<String> row = new Vector<String>();
@@ -116,6 +122,10 @@ public class JTabbedPaneHelper extends CommonComponent{
 		});
 		
 		JTable table = new JTable(data, columnNames);
+		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
+		table.getTableHeader().setFont(headerFont);
+		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
+		table.setFont(tableFont);
 		table.setFillsViewportHeight(true);
 		return table;
 	}
@@ -123,18 +133,25 @@ public class JTabbedPaneHelper extends CommonComponent{
 	
 	private JTable property() {
 		Vector<String> columnNames = new Vector<String>();
-		columnNames.addElement("键");
-		columnNames.addElement("值");
+		columnNames.addElement("属性键");
+		columnNames.addElement("属性值");
 		Vector<Vector<String>> data = new Vector<Vector<String>>();
 		System.getProperties().keySet().forEach(k -> {
-			Vector<String> row = new Vector<String>();
-			row.addElement(String.valueOf(k));
-			row.addElement(System.getProperty(String.valueOf(k)));
-			data.addElement(row);
+			if(String.valueOf(k).startsWith("java.")) {
+				Vector<String> row = new Vector<String>();
+				row.addElement(String.valueOf(k));
+				row.addElement(System.getProperty(String.valueOf(k)));
+				data.addElement(row);
+			}
 		});
 		
 		JTable table = new JTable(data, columnNames);
-		table.setFillsViewportHeight(true);
+		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
+		table.getTableHeader().setFont(headerFont);
+		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
+		table.setFont(tableFont);
+		table.setEnabled(false);;
+		table.setFillsViewportHeight(false);
 		return table;
 	}
 	

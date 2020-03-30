@@ -8,6 +8,7 @@
 
 package com.redis.desktop.window;
 
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -80,6 +81,8 @@ public class Tree extends CommonComponent {
 			redisInfoStore.add(node.getAddress(), node);
 		}
 		tree = new JTree(root);
+		Font font = new Font(Font.MONOSPACED, Font.BOLD, 15);
+		tree.setFont(font);
 		treeCellRenderer((DefaultTreeCellRenderer) tree.getCellRenderer());
 		//treeUI((BasicTreeUI)tree.getUI());
 		tree.collapsePath(new TreePath(root.getRoot()));

@@ -9,10 +9,6 @@
 package com.redis.desktop.boot;
 
 import java.awt.EventQueue;
-import java.awt.Font;
-import java.util.Enumeration;
-
-import javax.swing.UIManager;
 
 import com.redis.desktop.util.SpringContextUtil;
 import com.redis.desktop.window.MainFrame;
