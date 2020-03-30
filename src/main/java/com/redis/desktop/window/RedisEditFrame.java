@@ -88,7 +88,7 @@ public class RedisEditFrame extends JFrame{
 		JButton cancel = new JButton("取消");
 		cancel.addActionListener((e)-> setVisible(false));
 		add(cancel,cc.xy(3,8));
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}

@@ -9,6 +9,8 @@
 package com.redis.desktop.window;
 
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -18,7 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import com.redis.desktop.component.CustomerComponent;
+import com.redis.desktop.listener.SystemExitListener;
+
 import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 
@@ -43,8 +50,8 @@ public class MainFrame extends JFrame{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	@Value("${spring.main.frame.icon}")
-	private String iconImagePath = "";
+	@Value("classpath:icons/icon_window_128.png")
+	private Resource windowIconFile;
 	
 	@Value("${spring.main.frame.width}")
 	private Integer width = 1024;
@@ -52,8 +59,11 @@ public class MainFrame extends JFrame{
 	@Value("${spring.main.frame.height}")
 	private Integer height = 1024;
 	
-//	@Autowired
-//	private JMenuBar topMenuBar;
+	@Autowired
+	private SystemExitListener systemExitListener;
+	
+	@Autowired
+	private CustomerComponent customerComponent;
 	
 	@Value("${spring.main.frame.title:桌面程序}")
 	private String title;
@@ -70,7 +80,12 @@ public class MainFrame extends JFrame{
 	public void showWindow() {
 		setTitle(title);
 		//setJMenuBar(topMenuBar);
-		ImageIcon imageIcon = new ImageIcon(iconImagePath);
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				systemExitListener.exitSystem();
+			}
+		});
+		ImageIcon imageIcon = customerComponent.createImageIcon(windowIconFile);
 		setIconImage(imageIcon.getImage());
 		setSize(new Dimension(width, height));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

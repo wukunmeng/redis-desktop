@@ -46,7 +46,7 @@ public abstract class CommonComponent implements ApplicationContextAware {
 	
 	private ApplicationContext applicationContext;
 	
-	protected ImageIcon createImageIcon(Resource resource) {
+	public ImageIcon createImageIcon(Resource resource) {
 		try {
 			return new ImageIcon(resource.getURL());
 		} catch (IOException e) {

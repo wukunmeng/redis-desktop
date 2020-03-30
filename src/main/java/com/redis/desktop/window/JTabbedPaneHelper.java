@@ -9,11 +9,15 @@
 package com.redis.desktop.window;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -79,6 +83,24 @@ public class JTabbedPaneHelper extends CommonComponent{
 //				}
 //			}
 //		});
+		JPopupMenu m = new JPopupMenu();
+		JMenuItem pupop = new JMenuItem("关闭");
+		m.add(pupop);
+		pupop.addActionListener((e)->{
+			tab.remove(tab.getSelectedIndex());
+			m.setVisible(false);
+		});
+		tab.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				logger.info("button:{}", e.getButton());
+				logger.info("x:{},y:{}", e.getX(),e.getY());
+				if(e.getButton() == MouseEvent.BUTTON3) {
+					m.show(tab, e.getX(), e.getY());
+					logger.info("source:{}", e.getSource().getClass().getName());
+					logger.info("source:{}", e.getComponent().getClass().getName());
+				}
+			}
+		});
 	}
 	
 	private JTable table() {

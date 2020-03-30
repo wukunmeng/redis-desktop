@@ -30,9 +30,12 @@ public class SystemExitListener extends AbstractListener implements ActionListen
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO 修正为spring boot的优雅退出方式
+		exitSystem();
+	}
+
+	public void exitSystem() {
 		logger.info("system exit...");
 		System.exit(SpringApplication.exit(getContext()));
 	}
-
 }
 
