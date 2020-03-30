@@ -11,6 +11,7 @@ package com.redis.desktop.listener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,7 +31,7 @@ public class SystemExitListener extends AbstractListener implements ActionListen
 	public void actionPerformed(ActionEvent e) {
 		// TODO 修正为spring boot的优雅退出方式
 		logger.info("system exit...");
-		System.exit(0);
+		System.exit(SpringApplication.exit(getContext()));
 	}
 
 }

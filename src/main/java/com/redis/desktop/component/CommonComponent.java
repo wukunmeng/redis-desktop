@@ -31,6 +31,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.util.SerializationUtils;
 
@@ -103,12 +104,12 @@ public abstract class CommonComponent implements ApplicationContextAware {
 		return null;
 	}
 	
-	public void skip(long s) {
-		try {
-			Thread.sleep(s * 1000);
-		} catch (Exception e) {
-			logger.error("Exception:{}", e.getMessage());
-		}
+	public void publishEvent(ApplicationEvent event) {
+		applicationContext.publishEvent(event);
+	}
+	
+	public ApplicationContext getContext() {
+		return this.applicationContext;
 	}
 }
 

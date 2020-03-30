@@ -11,9 +11,13 @@ package com.redis.desktop.store;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PreDestroy;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
+import com.redis.desktop.listener.event.RedisCloseEvent;
 import com.redis.desktop.model.RedisNodeModel;
 
 import redis.clients.jedis.Jedis;
@@ -41,14 +45,6 @@ public class RedisInfoStore extends CommonComponent{
 	
 	public void add(String name, Jedis client) {
 		clients.put(name, client);
-		new Thread() {
-			public void run() {
-				while(true) {
-					skip(10);
-					logger.info("name:{},ping:{}",name, client.ping());
-				}
-			}
-		}.start();
 	}
 	
 	public RedisNodeModel getRedis(String name) {
@@ -59,11 +55,40 @@ public class RedisInfoStore extends CommonComponent{
 		return clients.get(name);
 	}
 	
+	@PreDestroy
 	public void closeClients() {
+		logger.info("close all clients...");
 		clients.forEach((k,v) -> {
 			logger.info("close:{}", k);
 			v.close();
 		});
+		logger.info("close all clients");
+	}
+	
+	public void closeClient(RedisNodeModel node) {
+		String add = node.getAddress();
+		Jedis c = clients.remove(add);
+		c.close();
+		redis.remove(add);
+	}
+	
+	public void checkClient() {
+		clients.forEach((k,v) -> {
+			boolean ok = tryClient(k, v);
+			logger.info("check client :{},state:{}",k, ok ? "ok":"failed");
+			if(!ok) {
+				publishEvent(new RedisCloseEvent(redis.get(k)));
+			}
+		});
+	}
+	
+	private boolean tryClient(String address, Jedis client) {
+		try {
+			return StringUtils.equalsIgnoreCase("pong", client.ping());
+		} catch(Exception e) {
+			logger.warn("client failed:{}, Exception:{}", address, e.getMessage());
+		}
+		return false;
 	}
 }
 
