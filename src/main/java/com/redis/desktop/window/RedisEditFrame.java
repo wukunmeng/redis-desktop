@@ -23,6 +23,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.redis.desktop.component.CustomerComponent;
 import com.redis.desktop.model.RedisNodeModel;
+import com.redis.desktop.store.RedisInfoStore;
 import com.redis.desktop.util.Commons;
 
 /**
@@ -49,6 +50,9 @@ public class RedisEditFrame extends JFrame{
 	
 	@Autowired
 	private CustomerComponent customerComponent;
+	
+	@Autowired
+	private RedisInfoStore redisInfoStore;
 	
 	public void showWindow() {
 		setSize(400, 200);
@@ -77,6 +81,7 @@ public class RedisEditFrame extends JFrame{
 			note.setAuthorization(auth.getText());
 			customerComponent.writeObject(Commons.fileName(note), note);
 			tree.addChildren(note);
+			redisInfoStore.add(note.getAddress(), note);
 			setVisible(false);
 		});
 		add(ok, cc.xy(1, 8));
