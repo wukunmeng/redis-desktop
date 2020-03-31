@@ -9,6 +9,7 @@
 package com.redis.desktop.window;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -22,6 +23,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,10 +54,16 @@ import redis.clients.jedis.ScanResult;
 public class JTabbedPaneHelper extends CommonComponent{
 
 	@Value("classpath:icons/icon_home_16.png")
-	private Resource homeTabIcon;
+	private Resource homeTabIconFile;
 	
-	@Value("classpath:icons/icon_system-users_16.png")
-	private Resource queryToolFileIcon;
+	@Value("classpath:icons/icon_home_24.png")
+	private Resource homeIconFile;
+	
+	@Value("classpath:icons/icon_system-search_24.png")
+	private Resource queryToolIconFile;
+	
+	@Value("classpath:icons/icon_system-file-manager_16.png")
+	private Resource systemFileManagerIconFile;
 	
 	@Value("classpath:icons/icon_letter-x-blue_16.png")
 	private Resource closeTabIconFile;
@@ -68,8 +76,8 @@ public class JTabbedPaneHelper extends CommonComponent{
 	@PostConstruct
 	public void initialize() {
 		JToolBar bar = new JToolBar();
-		bar.add(new JButton(createImageIcon(homeTabIcon)));
-		bar.add(new JButton(createImageIcon(queryToolFileIcon)));
+		bar.add(new JButton(createImageIcon(homeIconFile)));
+		bar.add(new JButton(createImageIcon(queryToolIconFile)));
 		
 		tab = new JTabbedPane(JTabbedPane.TOP);
 		Font tabFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
@@ -77,13 +85,13 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JPanel propertyPanel = new JPanel(new BorderLayout());
 		JScrollPane propertyScrollPane = new JScrollPane(property());
 		propertyPanel.add(propertyScrollPane, BorderLayout.CENTER);
-		tab.addTab("首页", createImageIcon(homeTabIcon), propertyPanel);
+		tab.addTab("首页", createImageIcon(homeTabIconFile), propertyPanel);
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane(table());
 		panel.add(bar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab("系统属性", createImageIcon(closeTabIconFile), panel);
+		tab.addTab("系统属性", createImageIcon(systemFileManagerIconFile), panel);
 		//TabPane tabOne = new TabPane("系统属性", createImageIcon(closeTabIconFile));
 		//tab.setTabComponentAt(1, tabOne);
 //		tab.addChangeListener((e) -> {
@@ -192,13 +200,15 @@ public class JTabbedPaneHelper extends CommonComponent{
 			data.add(row);
 		});
 		JToolBar bar = new JToolBar();
-		bar.add(new JButton(createImageIcon(homeTabIcon)));
-		bar.add(new JButton(createImageIcon(queryToolFileIcon)));
+		bar.add(new JButton(createImageIcon(homeIconFile)));
+		bar.addSeparator(new Dimension(20, 20));
+		bar.add(new JTextField(30));
+		bar.add(new JButton(createImageIcon(queryToolIconFile)));
 		JPanel panel = new JPanel(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane(dbTable(data));
 		panel.add(bar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab(dbNode.getName(), createImageIcon(closeTabIconFile), panel);
+		tab.addTab(dbNode.getName(), createImageIcon(systemFileManagerIconFile), panel);
 	}
 	
 	private JTable dbTable(Vector<Vector<String>> data) {
