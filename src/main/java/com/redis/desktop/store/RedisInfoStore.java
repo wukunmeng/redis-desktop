@@ -65,6 +65,16 @@ public class RedisInfoStore extends CommonComponent{
 		logger.info("close all clients");
 	}
 	
+	public void clearRedis(String address) {
+		RedisNodeModel redisNode = redis.remove(address);
+		if(redisNode == null) {
+			return;
+		}
+		if(clients.containsKey(redisNode.getAddress())) {
+			closeClient(redisNode);
+		}
+	}
+	
 	public void closeClient(RedisNodeModel node) {
 		String add = node.getAddress();
 		Jedis c = clients.remove(add);

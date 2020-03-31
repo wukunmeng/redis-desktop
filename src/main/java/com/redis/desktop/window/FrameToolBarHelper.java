@@ -15,6 +15,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
 import com.redis.desktop.listener.SystemExitListener;
+import com.redis.desktop.model.RedisNodeModel;
 import com.redis.desktop.store.RedisInfoStore;
 
 /**
@@ -68,7 +70,10 @@ public class FrameToolBarHelper extends CommonComponent {
 		JButton deleteRedisServer = new JButton(createImageIcon(deleteRedisServerIconFile));
 		deleteRedisServer.setToolTipText("删除选中Redis");
 		deleteRedisServer.addActionListener((e) ->{
-			deleteTree(tree.tree(),(DefaultMutableTreeNode)tree.tree().getLastSelectedPathComponent());
+			String adr = deleteTree(tree.tree(),(DefaultMutableTreeNode)tree.tree().getLastSelectedPathComponent());
+			if(StringUtils.isNotBlank(adr)) {
+				redisInfoStore.clearRedis(adr);
+			}
 		});
 		toolBar.add(deleteRedisServer);
 		
@@ -82,13 +87,14 @@ public class FrameToolBarHelper extends CommonComponent {
 		if(node.isRoot()) {
 			return null;
 		}
-		if(redisInfoStore.getRedis(node.toString()) == null) {
-			return deleteTree(tree, (DefaultMutableTreeNode)node.getParent());
-		} else {
-			String path = node.toString();
+		Object o = node.getUserObject();
+		if(o instanceof RedisNodeModel) {
+			RedisNodeModel redis = (RedisNodeModel)o;
+			String address = redis.getAddress();
 			((DefaultTreeModel)tree.getModel()).removeNodeFromParent(node);
-			return path;
+			return address;
 		}
+		return null;
 	}
 	
 	public JToolBar toolBar() {

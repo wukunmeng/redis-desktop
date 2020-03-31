@@ -24,11 +24,19 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
+import com.redis.desktop.model.DbNodeModel;
+import com.redis.desktop.store.RedisInfoStore;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 
 /**
  * ClassName:JTabbedPaneHelper <br/>
@@ -53,6 +61,9 @@ public class JTabbedPaneHelper extends CommonComponent{
 	private Resource closeTabIconFile;
 	
 	private JTabbedPane tab;
+	
+	@Autowired
+	private RedisInfoStore redisInfoStore;
 	
 	@PostConstruct
 	public void initialize() {
@@ -157,6 +168,51 @@ public class JTabbedPaneHelper extends CommonComponent{
 	
 	public JTabbedPane tabbedPane() {
 		return tab;
+	}
+	
+	public void createTab(DbNodeModel dbNode) {
+		Jedis client = 
+				redisInfoStore.getRedisClient(dbNode.getRedisNodeModel().getAddress());
+		client.select(dbNode.getDb());
+		String cursor = ScanParams.SCAN_POINTER_START;
+		ScanParams params = new ScanParams();
+		params.match("*");
+		params.count(100);
+		ScanResult<String> keys = client.scan(cursor,params);
+		Vector<Vector<String>> data = new Vector<Vector<String>>();
+		keys.getResult().forEach(k -> {
+			Vector<String> row = new Vector<String>();
+			row.add(k);
+			if(StringUtils.equalsIgnoreCase("string", client.type(k))){
+				row.add(client.get(k));
+			} else {
+				row.add("==unknow--不可读==");
+			}
+			row.add(String.valueOf(client.ttl(k)));
+			data.add(row);
+		});
+		JToolBar bar = new JToolBar();
+		bar.add(new JButton(createImageIcon(homeTabIcon)));
+		bar.add(new JButton(createImageIcon(queryToolFileIcon)));
+		JPanel panel = new JPanel(new BorderLayout());
+		JScrollPane scrollPane = new JScrollPane(dbTable(data));
+		panel.add(bar, BorderLayout.NORTH);
+		panel.add(scrollPane, BorderLayout.CENTER);
+		tab.addTab(dbNode.getName(), createImageIcon(closeTabIconFile), panel);
+	}
+	
+	private JTable dbTable(Vector<Vector<String>> data) {
+		Vector<String> columnNames = new Vector<String>();
+		columnNames.addElement("键");
+		columnNames.addElement("值");
+		columnNames.addElement("TTL");
+		JTable table = new JTable(data, columnNames);
+		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
+		table.getTableHeader().setFont(headerFont);
+		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
+		table.setFont(tableFont);
+		table.setFillsViewportHeight(false);
+		return table;
 	}
 }
 

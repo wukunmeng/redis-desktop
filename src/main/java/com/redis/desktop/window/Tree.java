@@ -28,6 +28,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
+import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.model.RedisNodeModel;
 import com.redis.desktop.store.RedisInfoStore;
 
@@ -69,6 +70,9 @@ public class Tree extends CommonComponent {
 	
 	@Autowired
 	private RedisInfoStore redisInfoStore;
+	
+	@Autowired
+	private JTabbedPaneHelper jTabbedPaneHelper;
 
 	private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Redis");
 	
@@ -98,39 +102,15 @@ public class Tree extends CommonComponent {
 						return;
 					}
 					DefaultMutableTreeNode currentTreeNode = (DefaultMutableTreeNode)o;
-					if(!(currentTreeNode.getUserObject() instanceof RedisNodeModel)) {
+					if((currentTreeNode.getUserObject() instanceof RedisNodeModel)) {
 						logger.info("click:{}", currentTreeNode.getUserObject().toString());
+						processRedisNode(tree,currentTreeNode);
 						return;
 					}
-					RedisNodeModel redisNode = (RedisNodeModel)currentTreeNode.getUserObject();
-					RedisNodeModel node = redisInfoStore.getRedis(redisNode.getAddress());
-					try {
-						if(node != null && currentTreeNode.getChildCount() < 1) {
-							Jedis client = new Jedis(node.getAddress(), node.getPort());
-							if(!StringUtils.isBlank(node.getAuthorization())) {
-								client.auth(node.getAuthorization());
-							}
-							logger.info("ping:{}",client.ping());
-							redisInfoStore.add(node.getAddress(), client);
-							List<String> list = client.configGet("databases");
-							if(list == null || list.size() != 2) {
-								logger.info("database-index:{}", list);
-								((DefaultTreeModel)tree.getModel()).insertNodeInto(new DefaultMutableTreeNode("db"), currentTreeNode, currentTreeNode.getChildCount());
-							}
-							String databases = list.get(1);
-							int len = StringUtils.length(databases);
-							int index = Integer.parseInt(databases);
-							for(int i = 0; i < index; i++) {
-								logger.info("database-index:{}", i);
-								String dbIndex = StringUtils.leftPad(String.valueOf(i), len, "0");
-								((DefaultTreeModel)tree.getModel()).insertNodeInto(new DefaultMutableTreeNode("db-" + dbIndex), currentTreeNode, currentTreeNode.getChildCount());
-							}
-							redisNode.setConnect(true);
-							//currentTreeNode.setUserObject(node.getAddress() + "--" + "connect");
-						}
-					} catch (Exception ex) {
-						logger.error("connect:{}, exception:{}", currentTreeNode, ex.getMessage());
-						JOptionPane.showMessageDialog(frame, "不能连接:" + currentTreeNode, "错误提示框", JOptionPane.ERROR_MESSAGE);
+					if((currentTreeNode.getUserObject() instanceof DbNodeModel)) {
+						logger.info("click:{}", currentTreeNode.getUserObject().toString());
+						processDbNode(tree,currentTreeNode);
+						return;
 					}
 					logger.info("path:{}",currentTreeNode.toString());
 				}
@@ -176,5 +156,45 @@ public class Tree extends CommonComponent {
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(redis.getAddress());
 		DefaultTreeModel model = ((DefaultTreeModel)tree.getModel());
 		model.insertNodeInto(node, root, root.getChildCount());;
-	}	
+	}
+	
+	public void processRedisNode(JTree tree, DefaultMutableTreeNode clickNode) {
+		RedisNodeModel redisNode = (RedisNodeModel)clickNode.getUserObject();
+		RedisNodeModel node = redisInfoStore.getRedis(redisNode.getAddress());
+		try {
+			if(node != null && clickNode.getChildCount() < 1) {
+				Jedis client = new Jedis(node.getAddress(), node.getPort());
+				if(!StringUtils.isBlank(node.getAuthorization())) {
+					client.auth(node.getAuthorization());
+				}
+				logger.info("ping:{}",client.ping());
+				redisInfoStore.add(node.getAddress(), client);
+				List<String> list = client.configGet("databases");
+				if(list == null || list.size() != 2) {
+					logger.info("database-index:{}", list);
+					DbNodeModel dbNode = new DbNodeModel();
+					dbNode.setDb(-1);
+					((DefaultTreeModel)tree.getModel()).insertNodeInto(new DefaultMutableTreeNode(dbNode), clickNode, clickNode.getChildCount());
+				}
+				String databases = list.get(1);
+				int index = Integer.parseInt(databases);
+				for(int i = 0; i < index; i++) {
+					DbNodeModel dbNode = new DbNodeModel();
+					dbNode.setDb(i);
+					dbNode.setSize(databases);
+					dbNode.setRedisNodeModel(redisNode);
+					((DefaultTreeModel)tree.getModel()).insertNodeInto(new DefaultMutableTreeNode(dbNode), clickNode, clickNode.getChildCount());
+				}
+				redisNode.setConnect(true);
+			}
+		} catch (Exception ex) {
+			logger.error("connect:{}, exception:{}", redisNode.getAddress(), ex.getMessage());
+			JOptionPane.showMessageDialog(frame, "不能连接:" + redisNode.getAddress(), "错误提示框", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void processDbNode(JTree tree, DefaultMutableTreeNode clickNode) {
+		DbNodeModel dbNode = (DbNodeModel)clickNode.getUserObject();
+		jTabbedPaneHelper.createTab(dbNode);
+	}
 }
