@@ -163,7 +163,7 @@ public class Tree extends CommonComponent {
 		RedisNodeModel node = redisInfoStore.getRedis(redisNode.getAddress());
 		try {
 			if(node != null && clickNode.getChildCount() < 1) {
-				Jedis client = new Jedis(node.getAddress(), node.getPort());
+				Jedis client = new Jedis(node.getAddress(), node.getPort(), 30000);
 				if(!StringUtils.isBlank(node.getAuthorization())) {
 					client.auth(node.getAuthorization());
 				}

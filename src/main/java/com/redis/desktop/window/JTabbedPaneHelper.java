@@ -145,6 +145,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		table.getTableHeader().setFont(headerFont);
 		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
 		table.setFont(tableFont);
+		table.setRowHeight(40);
 		table.setFillsViewportHeight(true);
 		return table;
 	}
@@ -169,7 +170,8 @@ public class JTabbedPaneHelper extends CommonComponent{
 		table.getTableHeader().setFont(headerFont);
 		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
 		table.setFont(tableFont);
-		table.setEnabled(false);;
+		table.setRowHeight(40);
+		table.setEnabled(false);
 		table.setFillsViewportHeight(false);
 		return table;
 	}
@@ -201,7 +203,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		});
 		JToolBar bar = new JToolBar();
 		bar.add(new JButton(createImageIcon(homeIconFile)));
-		bar.addSeparator(new Dimension(20, 20));
+		bar.addSeparator(new Dimension(20, 0));
 		bar.add(new JTextField(30));
 		bar.add(new JButton(createImageIcon(queryToolIconFile)));
 		JPanel panel = new JPanel(new BorderLayout());
@@ -221,6 +223,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		table.getTableHeader().setFont(headerFont);
 		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
 		table.setFont(tableFont);
+		table.setRowHeight(40);
 		table.setFillsViewportHeight(false);
 		return table;
 	}
