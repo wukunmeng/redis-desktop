@@ -195,6 +195,10 @@ public class Tree extends CommonComponent {
 	
 	public void processDbNode(JTree tree, DefaultMutableTreeNode clickNode) {
 		DbNodeModel dbNode = (DbNodeModel)clickNode.getUserObject();
-		jTabbedPaneHelper.createTab(dbNode);
+		if(jTabbedPaneHelper.isOpenTab(dbNode)) {
+			jTabbedPaneHelper.selectIndex(dbNode);
+		} else {
+			jTabbedPaneHelper.createTab(dbNode);
+		}
 	}
 }

@@ -35,6 +35,8 @@ public class DbNodeModel implements Serializable {
 	private String size;
 	
 	private RedisNodeModel redisNodeModel;
+	
+	private Integer tabIndex;
 
 	public String getName() {
 		StringBuilder name = new StringBuilder();
@@ -68,6 +70,14 @@ public class DbNodeModel implements Serializable {
 
 	public void setSize(String size) {
 		this.size = size;
+	}
+
+	public Integer getTabIndex() {
+		return tabIndex;
+	}
+
+	public void setTabIndex(Integer tabIndex) {
+		this.tabIndex = tabIndex;
 	}
 
 	public String toString() {

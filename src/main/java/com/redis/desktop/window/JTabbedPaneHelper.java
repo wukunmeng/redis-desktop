@@ -13,6 +13,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 import javax.annotation.PostConstruct;
@@ -25,6 +28,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.event.DocumentEvent;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +39,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
+import com.redis.desktop.listener.ChangedValueListener;
 import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.store.RedisInfoStore;
 
@@ -73,6 +80,8 @@ public class JTabbedPaneHelper extends CommonComponent{
 	@Autowired
 	private RedisInfoStore redisInfoStore;
 	
+	private List<String> nodes = Collections.synchronizedList(new ArrayList<String>());
+	
 	@PostConstruct
 	public void initialize() {
 		JToolBar bar = new JToolBar();
@@ -86,12 +95,14 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JScrollPane propertyScrollPane = new JScrollPane(property());
 		propertyPanel.add(propertyScrollPane, BorderLayout.CENTER);
 		tab.addTab("首页", createImageIcon(homeTabIconFile), propertyPanel);
+		nodes.add("首页");
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane(table());
 		panel.add(bar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
 		tab.addTab("系统属性", createImageIcon(systemFileManagerIconFile), panel);
+		nodes.add("系统属性");
 		//TabPane tabOne = new TabPane("系统属性", createImageIcon(closeTabIconFile));
 		//tab.setTabComponentAt(1, tabOne);
 //		tab.addChangeListener((e) -> {
@@ -112,6 +123,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 			int index = tab.getSelectedIndex();
 			if(index > 0) {
 				tab.remove(tab.getSelectedIndex());
+				nodes.remove(tab.getSelectedIndex());
 			}
 			m.setVisible(false);
 		});
@@ -145,7 +157,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		table.getTableHeader().setFont(headerFont);
 		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
 		table.setFont(tableFont);
-		table.setRowHeight(40);
+		table.setRowHeight(36);
 		table.setFillsViewportHeight(true);
 		return table;
 	}
@@ -170,7 +182,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		table.getTableHeader().setFont(headerFont);
 		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
 		table.setFont(tableFont);
-		table.setRowHeight(40);
+		table.setRowHeight(36);
 		table.setEnabled(false);
 		table.setFillsViewportHeight(false);
 		return table;
@@ -180,13 +192,57 @@ public class JTabbedPaneHelper extends CommonComponent{
 		return tab;
 	}
 	
+	public boolean isOpenTab(DbNodeModel node) {
+		return nodes.contains(node.getName());
+	}
+	
+	public void selectIndex(DbNodeModel node) {
+		if(isOpenTab(node))
+		tab.setSelectedIndex(nodes.indexOf(node.getName()));
+	}
+	
 	public void createTab(DbNodeModel dbNode) {
+		JToolBar bar = new JToolBar();
+		JTable table = dbTable(loadData(dbNode, null));
+		JScrollPane scrollPane = new JScrollPane(table);
+		JPanel panel = new JPanel(new BorderLayout());
+		bar.add(new JButton(createImageIcon(homeIconFile)));
+		bar.addSeparator(new Dimension(20, 0));
+		JTextField query = new JTextField(30);
+		query.getDocument().addDocumentListener(new ChangedValueListener() {
+			@Override
+			public void valuechanged(DocumentEvent e, String value) {
+				// TODO Auto-generated method stub
+				table.setModel(loadData(dbNode, value));
+			}
+		});
+		bar.add(query);
+		bar.add(new JButton(createImageIcon(queryToolIconFile)));
+		
+		
+		panel.add(bar, BorderLayout.NORTH);
+		panel.add(scrollPane, BorderLayout.CENTER);
+		tab.addTab(dbNode.getName(), createImageIcon(systemFileManagerIconFile), panel);
+		nodes.add(dbNode.getName());
+	}
+	
+	private DefaultTableModel loadData(DbNodeModel dbNode, String match) {
 		Jedis client = 
 				redisInfoStore.getRedisClient(dbNode.getRedisNodeModel().getAddress());
-		client.select(dbNode.getDb());
+		if(dbNode.getDb() != null && dbNode.getDb() >= 0) {
+			client.select(dbNode.getDb());
+		}
 		String cursor = ScanParams.SCAN_POINTER_START;
 		ScanParams params = new ScanParams();
-		params.match("*");
+		if(StringUtils.isBlank(match)) {
+			params.match("*");
+		} else {
+			if(match.contains("*")) {
+				params.match(match);
+			} else {
+				params.match(match + "*");
+			}
+		}
 		params.count(100);
 		ScanResult<String> keys = client.scan(cursor,params);
 		Vector<Vector<String>> data = new Vector<Vector<String>>();
@@ -201,29 +257,20 @@ public class JTabbedPaneHelper extends CommonComponent{
 			row.add(String.valueOf(client.ttl(k)));
 			data.add(row);
 		});
-		JToolBar bar = new JToolBar();
-		bar.add(new JButton(createImageIcon(homeIconFile)));
-		bar.addSeparator(new Dimension(20, 0));
-		bar.add(new JTextField(30));
-		bar.add(new JButton(createImageIcon(queryToolIconFile)));
-		JPanel panel = new JPanel(new BorderLayout());
-		JScrollPane scrollPane = new JScrollPane(dbTable(data));
-		panel.add(bar, BorderLayout.NORTH);
-		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab(dbNode.getName(), createImageIcon(systemFileManagerIconFile), panel);
-	}
-	
-	private JTable dbTable(Vector<Vector<String>> data) {
 		Vector<String> columnNames = new Vector<String>();
 		columnNames.addElement("键");
 		columnNames.addElement("值");
 		columnNames.addElement("TTL");
-		JTable table = new JTable(data, columnNames);
+		return new DefaultTableModel(data, columnNames);
+	}
+	
+	private JTable dbTable(TableModel tableModel) {
+		JTable table = new JTable(tableModel);
 		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
 		table.getTableHeader().setFont(headerFont);
 		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
 		table.setFont(tableFont);
-		table.setRowHeight(40);
+		table.setRowHeight(36);
 		table.setFillsViewportHeight(false);
 		return table;
 	}
