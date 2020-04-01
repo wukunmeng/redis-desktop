@@ -16,6 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,6 +56,23 @@ public class RedisEditFrame extends JFrame{
 	@Autowired
 	private RedisInfoStore redisInfoStore;
 	
+	//地址
+	private JTextField address = new JTextField(32);
+	//端口
+	private JTextField port = new JTextField(32);
+	//密钥
+	private JTextField auth = new JTextField(32);
+	
+	private RedisNodeModel note = null;
+	
+	public void editRedis(RedisNodeModel redisNode) {
+		this.note = redisNode;
+		address.setText(this.note.getAddress());
+		port.setText(String.valueOf(this.note.getPort()));
+		auth.setText(this.note.getAuthorization());
+		showWindow();
+	}
+	
 	public void showWindow() {
 		setSize(400, 200);
 		setUndecorated(true);
@@ -64,33 +83,56 @@ public class RedisEditFrame extends JFrame{
 		setLayout(formLayout);
 		CellConstraints cc = new CellConstraints(); 
 		add(new JLabel("地址"), cc.xy(1, 2));
-		JTextField address = new JTextField(32);
 		add(address,cc.xywh(3, 2, 2, 1));
 		add(new JLabel("端口"), cc.xy(1, 4));
-		JTextField port = new JTextField(32);
 		add(port,cc.xywh(3, 4, 2, 1));
 		add(new JLabel("密钥"), cc.xy(1, 6));
-		JTextField auth = new JTextField(32);
 		add(auth,cc.xywh(3, 6, 2, 1));
 		JButton ok = new JButton("确定");
 		ok.addActionListener((e)-> {
-			JOptionPane.showMessageDialog(this, "确定保存?", "信息提示框", JOptionPane.QUESTION_MESSAGE);
-			RedisNodeModel note = new RedisNodeModel();
+			if(note == null) {
+				note = new RedisNodeModel();
+			}
+			if(StringUtils.isBlank(address.getText())) {
+				showMessage("地址信息不可为空,请填写正确地址");
+			}
 			note.setAddress(address.getText());
-			note.setPort(Integer.parseInt(port.getText()));
+			if(StringUtils.isBlank(port.getText())) {
+				note.setPort(6379);
+			} else if(!NumberUtils.isDigits(port.getText())) {
+				showMessage("端口号必须是有效数字");
+			} else {
+				note.setPort(NumberUtils.toInt(port.getText()));
+			}
 			note.setAuthorization(auth.getText());
+			redisInfoStore.getRedis(note.getAddress());
 			customerComponent.writeObject(Commons.fileName(note), note);
 			tree.addChildren(note);
 			redisInfoStore.add(note.getAddress(), note);
+			clear();
 			setVisible(false);
 		});
 		add(ok, cc.xy(1, 8));
 		JButton cancel = new JButton("取消");
-		cancel.addActionListener((e)-> setVisible(false));
+		cancel.addActionListener((e)-> {
+			clear();
+			setVisible(false);
+		});
 		add(cancel,cc.xy(3,8));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+	
+	private void clear() {
+		note = null;
+		address.setText("");
+		port.setText("");
+		auth.setText("");
+	}
+	
+	private void showMessage(String tip) {
+		JOptionPane.showMessageDialog(this, tip, "提示框", JOptionPane.INFORMATION_MESSAGE);
 	}
 }
 

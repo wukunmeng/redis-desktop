@@ -76,6 +76,13 @@ public abstract class CommonComponent implements ApplicationContextAware {
 		}
 	}
 	
+	public void deleteObject(String fileName) {
+		File file = new File(new File(dataPath),fileName);
+		if(file.exists()) {
+			FileUtils.deleteQuietly(file);
+		}
+	}
+	
 	public String[] listDataFile() {
 		File dir = new File(dataPath);
 		return dir.list(new FilenameFilter() {

@@ -72,8 +72,14 @@ public class JTabbedPaneHelper extends CommonComponent{
 	@Value("classpath:icons/icon_system-file-manager_16.png")
 	private Resource systemFileManagerIconFile;
 	
-	@Value("classpath:icons/icon_letter-x-blue_16.png")
-	private Resource closeTabIconFile;
+	@Value("classpath:icons/icon_sign-add_24.png")
+	private Resource addItemIconFile;
+	
+	@Value("classpath:icons/icon_edit_24.png")
+	private Resource updateItemIconFile;
+	
+	@Value("classpath:icons/icon_delete_24.png")
+	private Resource deleteItemIconFile;
 	
 	private JTabbedPane tab;
 	
@@ -97,12 +103,12 @@ public class JTabbedPaneHelper extends CommonComponent{
 		tab.addTab("首页", createImageIcon(homeTabIconFile), propertyPanel);
 		nodes.add("首页");
 		
-		JPanel panel = new JPanel(new BorderLayout());
-		JScrollPane scrollPane = new JScrollPane(table());
-		panel.add(bar, BorderLayout.NORTH);
-		panel.add(scrollPane, BorderLayout.CENTER);
-		tab.addTab("系统属性", createImageIcon(systemFileManagerIconFile), panel);
-		nodes.add("系统属性");
+//		JPanel panel = new JPanel(new BorderLayout());
+//		JScrollPane scrollPane = new JScrollPane(table());
+//		panel.add(bar, BorderLayout.NORTH);
+//		panel.add(scrollPane, BorderLayout.CENTER);
+//		tab.addTab("系统属性", createImageIcon(systemFileManagerIconFile), panel);
+//		nodes.add("系统属性");
 		//TabPane tabOne = new TabPane("系统属性", createImageIcon(closeTabIconFile));
 		//tab.setTabComponentAt(1, tabOne);
 //		tab.addChangeListener((e) -> {
@@ -140,7 +146,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		});
 	}
 	
-	private JTable table() {
+	public JTable table() {
 		Vector<String> columnNames = new Vector<String>();
 		columnNames.addElement("环境变量");
 		columnNames.addElement("环境变量值");
@@ -218,7 +224,10 @@ public class JTabbedPaneHelper extends CommonComponent{
 		});
 		bar.add(query);
 		bar.add(new JButton(createImageIcon(queryToolIconFile)));
-		
+		bar.addSeparator(new Dimension(10, 0));
+		bar.add(new JButton(createImageIcon(addItemIconFile)));
+		bar.add(new JButton(createImageIcon(updateItemIconFile)));
+		bar.add(new JButton(createImageIcon(deleteItemIconFile)));
 		
 		panel.add(bar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
