@@ -47,6 +47,7 @@ public class Boot {
 //	                UIManager.put(key, font);
 //	            }
 //	        }
+			//mvn dependency:copy-dependencies #copy dependency 复制依赖到指定目录
 	        //WebLookAndFeel.install();
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {

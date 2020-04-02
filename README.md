@@ -5,9 +5,8 @@ Redis桌面
 ```
 mvn clean
 mvn package
-mvn dependency:copy-dependencies
 或者
-mvn clean package dependency:copy-dependencies
+mvn clean package
 ```
 
 

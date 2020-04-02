@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>release</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <!-- 使用assembly拷贝依赖包 -->
+    <!--<dependencySets>-->
+        <!--<dependencySet>-->
+            <!--&lt;!&ndash; 是否包含自己（将项目生成的jar包也输出到lib目录） &ndash;&gt;-->
+            <!--<useProjectArtifact>false</useProjectArtifact>-->
+            <!--<outputDirectory>lib</outputDirectory>-->
+        <!--</dependencySet>-->
+    <!--</dependencySets>-->
+    <fileSets>
+        <!-- 从目标目录拷贝文件去压缩 -->
+        <!-- 
+        <fileSet>
+            <directory>target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+         
+        <fileSet>
+            <directory>target/lib</directory>
+            <outputDirectory>/lib</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>target/config</directory>
+            <outputDirectory>/config</outputDirectory>
+        </fileSet>
+		-->
+		<fileSet>
+            <directory>target/redis-desktop</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <!-- 从源目录拷贝文件去压缩 
+        <fileSet>
+            <directory>src/main/run</directory>
+            <includes>
+                <include>*.sh</include>
+                <include>*.cmd</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/main</directory>
+            <includes>
+                <include>ReadMe.txt</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+        -->
+    </fileSets>
+</assembly>

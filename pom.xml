@@ -83,6 +83,7 @@
 						<exclude>redis-desktop</exclude>
 						<exclude>redis-desktop.desktop</exclude>
 						<exclude>application.properties</exclude>
+						<exclude>assembly.xml</exclude>
 					</excludes>
 					<!-- 
 		        	<archive>
@@ -96,9 +97,20 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>3.1.2</version>
-				<configuration>
-					<outputDirectory>${basedir}/target/redis-desktop/lib</outputDirectory>
-				</configuration>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${basedir}/target/redis-desktop/lib
+                            </outputDirectory>
+                        </configuration>
+					</execution>
+				</executions>
 	  		</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -144,6 +156,24 @@
 						</configuration>
 					</execution>
         		</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<descriptors>src/main/resources/assembly.xml</descriptors>
+				</configuration>
+				<executions>
+					<!-- 当执行mvn package时才会打包 -->
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
