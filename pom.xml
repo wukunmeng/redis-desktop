@@ -2,8 +2,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.home.common</groupId>
-	<artifactId>common</artifactId>
+	<groupId>com.redis.desktop</groupId>
+	<artifactId>redis-desktop</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0</version>
 	<name>common</name>
@@ -56,4 +56,95 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+					<excludes>
+						<exclude>icons/*</exclude>
+						<exclude>application.properties</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-jar-plugin</artifactId>
+		        <version>3.2.0</version>
+		        <configuration>
+		        	<excludes>
+						<exclude>icons/</exclude>
+						<exclude>application.properties</exclude>
+						<exclude>redis-desktop</exclude>
+						<exclude>redis-desktop.desktop</exclude>
+						<exclude>application.properties</exclude>
+					</excludes>
+					<!-- 
+		        	<archive>
+		            	<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+		        	</archive>
+		        	 -->
+		        	<outputDirectory>${basedir}/target/redis-desktop/lib</outputDirectory>
+		        </configuration>
+        	</plugin>
+        	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<outputDirectory>${basedir}/target/redis-desktop/lib</outputDirectory>
+				</configuration>
+	  		</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+    			<artifactId>maven-resources-plugin</artifactId>
+    			<version>3.1.0</version>
+    			<executions>
+          			<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need<phase>validate</phase> -->
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/redis-desktop/conf</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<include>icons/*</include>
+									<include>application.properties</include>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-desktop</id>
+						<!-- here the phase you need<phase>validate</phase> -->
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/redis-desktop</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<include>redis-desktop</include>
+									<include>redis-desktop.desktop</include>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+        		</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -8,6 +8,8 @@
 
 package com.redis.desktop.boot;
 
+import java.util.Properties;
+
 import javax.swing.UIManager;
 
 import org.springframework.boot.WebApplicationType;
@@ -31,6 +33,8 @@ public class Boot {
 
 	public static void main(String[] args) {
 		try {
+			Properties props = System.getProperties();
+			props.setProperty("javax.accessibility.assistive_technologies", "");
 			UIManager.put("swing.boldMetal", Boolean.FALSE);
 //			System.setProperty("awt.useSystemAAFontSettings", "on"); 
 //			System.setProperty("swing.aatext", "true");

@@ -28,7 +28,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.event.DocumentEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -39,7 +38,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
-import com.redis.desktop.listener.ChangedValueListener;
 import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.store.RedisInfoStore;
 
@@ -212,18 +210,23 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JTable table = dbTable(loadData(dbNode, null));
 		JScrollPane scrollPane = new JScrollPane(table);
 		JPanel panel = new JPanel(new BorderLayout());
-		bar.add(new JButton(createImageIcon(homeIconFile)));
+		JButton home = new JButton(createImageIcon(homeIconFile));
+		home.addActionListener((e) -> tab.setSelectedIndex(0));
+		bar.add(home);
 		bar.addSeparator(new Dimension(20, 0));
-		JTextField query = new JTextField(30);
-		query.getDocument().addDocumentListener(new ChangedValueListener() {
-			@Override
-			public void valuechanged(DocumentEvent e, String value) {
-				// TODO Auto-generated method stub
-				table.setModel(loadData(dbNode, value));
-			}
+		JTextField queryText = new JTextField(30);
+//		queryText.getDocument().addDocumentListener(new ChangedValueListener() {
+//			@Override
+//			public void valuechanged(DocumentEvent e, String value) {
+//				table.setModel(loadData(dbNode, value));
+//			}
+//		});
+		bar.add(queryText);
+		JButton queryButton = new JButton(createImageIcon(queryToolIconFile));
+		queryButton.addActionListener((e) -> {
+			table.setModel(loadData(dbNode, queryText.getText()));
 		});
-		bar.add(query);
-		bar.add(new JButton(createImageIcon(queryToolIconFile)));
+		bar.add(queryButton);
 		bar.addSeparator(new Dimension(10, 0));
 		bar.add(new JButton(createImageIcon(addItemIconFile)));
 		bar.add(new JButton(createImageIcon(updateItemIconFile)));
@@ -232,6 +235,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		panel.add(bar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
 		tab.addTab(dbNode.getName(), createImageIcon(systemFileManagerIconFile), panel);
+		tab.setSelectedIndex(tab.getTabCount() - 1);
 		nodes.add(dbNode.getName());
 	}
 	

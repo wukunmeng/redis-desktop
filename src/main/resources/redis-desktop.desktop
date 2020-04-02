@@ -1,0 +1,7 @@
+[Desktop Entry]
+Categories=Development;
+Exec=/media/wukm/software/deepin_software/redis-desktop/redis-desktop
+Icon=/media/wukm/software/deepin_software/redis-desktop/conf/icons/icon_window_128.png
+Name=JedisDesktop
+Terminal=false
+Type=Application
