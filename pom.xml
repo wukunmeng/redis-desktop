@@ -20,6 +20,12 @@
 			<version>${spring-boot-version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>2.5.10</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
 			<groupId>com.weblookandfeel</groupId>
 			<artifactId>weblaf-ui</artifactId>
 			<version>1.2.12</version>
@@ -73,51 +79,49 @@
 				</configuration>
 			</plugin>
 			<plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-jar-plugin</artifactId>
-		        <version>3.2.0</version>
-		        <configuration>
-		        	<excludes>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<excludes>
 						<exclude>icons/</exclude>
 						<exclude>application.properties</exclude>
 						<exclude>redis-desktop</exclude>
 						<exclude>redis-desktop.desktop</exclude>
 						<exclude>application.properties</exclude>
 						<exclude>assembly.xml</exclude>
+						<exclude>logback.groovy</exclude>
 					</excludes>
-					<!-- 
-		        	<archive>
-		            	<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-		        	</archive>
-		        	 -->
-		        	<outputDirectory>${basedir}/target/redis-desktop/lib</outputDirectory>
-		        </configuration>
-        	</plugin>
-        	<plugin>
+					<!-- <archive> <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile> 
+						</archive> -->
+					<outputDirectory>${basedir}/target/redis-desktop/lib</outputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>3.1.2</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${basedir}/target/redis-desktop/lib
-                            </outputDirectory>
-                        </configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>
+								${basedir}/target/redis-desktop/lib
+							</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
-	  		</plugin>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-    			<artifactId>maven-resources-plugin</artifactId>
-    			<version>3.1.0</version>
-    			<executions>
-          			<execution>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
 						<id>copy-resources</id>
 						<!-- here the phase you need<phase>validate</phase> -->
 						<phase>validate</phase>
@@ -130,6 +134,7 @@
 								<resource>
 									<directory>src/main/resources</directory>
 									<include>icons/*</include>
+									<include>logback.groovy</include>
 									<include>application.properties</include>
 									<filtering>true</filtering>
 								</resource>
@@ -155,7 +160,7 @@
 							</resources>
 						</configuration>
 					</execution>
-        		</executions>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
