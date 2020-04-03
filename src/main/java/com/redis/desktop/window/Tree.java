@@ -9,6 +9,9 @@
 package com.redis.desktop.window;
 
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -84,7 +87,21 @@ public class Tree extends CommonComponent {
 			root.add(new DefaultMutableTreeNode(node));
 			redisInfoStore.add(node.getAddress(), node);
 		}
-		tree = new JTree(root);
+		tree = new JTree(root) {
+			/**
+			 * serialVersionUID:TODO(用一句话描述这个变量表示什么).
+			 * @since JDK 1.8
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g){
+		        Graphics2D g2d=(Graphics2D)g;   
+		        g2d.setRenderingHint(
+		             RenderingHints.KEY_ANTIALIASING,
+		             RenderingHints.VALUE_ANTIALIAS_ON);
+		        super.paintComponent(g2d);
+		     }
+		};
 		Font font = new Font(Font.MONOSPACED, Font.BOLD, 15);
 		tree.setFont(font);
 		treeCellRenderer((DefaultTreeCellRenderer) tree.getCellRenderer());

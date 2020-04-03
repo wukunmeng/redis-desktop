@@ -11,6 +11,9 @@ package com.redis.desktop.window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -31,6 +34,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +44,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
+import com.redis.desktop.component.TabbedPane;
 import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.model.DbScanCountModel;
 import com.redis.desktop.store.RedisInfoStore;
@@ -82,7 +87,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 	@Value("classpath:icons/icon_delete_24.png")
 	private Resource deleteItemIconFile;
 	
-	private JTabbedPane tab;
+	private TabbedPane tab;
 	
 	@Autowired
 	private RedisInfoStore redisInfoStore;
@@ -95,7 +100,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		bar.add(new JButton(createImageIcon(homeIconFile)));
 		bar.add(new JButton(createImageIcon(queryToolIconFile)));
 		
-		tab = new JTabbedPane(JTabbedPane.TOP);
+		tab = new TabbedPane(JTabbedPane.TOP);
 		Font tabFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
 		tab.setFont(tabFont);
 		JPanel propertyPanel = new JPanel(new BorderLayout());
@@ -184,7 +189,17 @@ public class JTabbedPaneHelper extends CommonComponent{
 			}
 		});
 		
-		JTable table = new JTable(data, columnNames);
+		JTable table = new JTable(data, columnNames) {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g){
+		        Graphics2D g2d=(Graphics2D)g;   
+		        g2d.setRenderingHint(
+		             RenderingHints.KEY_ANTIALIASING,
+		             RenderingHints.VALUE_ANTIALIAS_ON);
+		        super.paintComponent(g2d);
+		     }
+		};
 		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
 		table.getTableHeader().setFont(headerFont);
 		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
@@ -306,7 +321,28 @@ public class JTabbedPaneHelper extends CommonComponent{
 	}
 	
 	private JTable dbTable(TableModel tableModel) {
-		JTable table = new JTable(tableModel);
+		JTable table = new JTable(tableModel) {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g){
+		        Graphics2D g2d=(Graphics2D)g;   
+		        g2d.setRenderingHint(
+		             RenderingHints.KEY_ANTIALIASING,
+		             RenderingHints.VALUE_ANTIALIAS_ON);
+		        super.paintComponent(g2d);
+		     }
+		};
+		table.setTableHeader(new JTableHeader(table.getColumnModel()) {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g){
+		        Graphics2D g2d=(Graphics2D)g;   
+		        g2d.setRenderingHint(
+		             RenderingHints.KEY_ANTIALIASING,
+		             RenderingHints.VALUE_ANTIALIAS_ON);
+		        super.paintComponent(g2d);
+		     }
+		});
 		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
 		table.getTableHeader().setFont(headerFont);
 		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
