@@ -37,6 +37,8 @@ public class DbNodeModel implements Serializable {
 	private RedisNodeModel redisNodeModel;
 	
 	private Integer tabIndex;
+	
+	private int scanCount = 100;
 
 	public String getName() {
 		StringBuilder name = new StringBuilder();
@@ -78,6 +80,14 @@ public class DbNodeModel implements Serializable {
 
 	public void setTabIndex(Integer tabIndex) {
 		this.tabIndex = tabIndex;
+	}
+
+	public int getScanCount() {
+		return scanCount;
+	}
+
+	public void setScanCount(int scanCount) {
+		this.scanCount = scanCount;
 	}
 
 	public String toString() {

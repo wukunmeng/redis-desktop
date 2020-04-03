@@ -11,6 +11,7 @@ package com.redis.desktop.window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -39,6 +41,7 @@ import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
 import com.redis.desktop.model.DbNodeModel;
+import com.redis.desktop.model.DbScanCountModel;
 import com.redis.desktop.store.RedisInfoStore;
 
 import redis.clients.jedis.Jedis;
@@ -232,6 +235,31 @@ public class JTabbedPaneHelper extends CommonComponent{
 		bar.add(new JButton(createImageIcon(updateItemIconFile)));
 		bar.add(new JButton(createImageIcon(deleteItemIconFile)));
 		
+		JComboBox<DbScanCountModel> comboBox = new JComboBox<DbScanCountModel>();
+		comboBox.addItem(new DbScanCountModel("scan-10", 10));
+		comboBox.addItem(new DbScanCountModel("scan-100", 100));
+		comboBox.addItem(new DbScanCountModel("scan-500", 500));
+		comboBox.addItem(new DbScanCountModel("scan-1000", 1000));
+		for(int i = 0; i < comboBox.getItemCount(); i++) {
+			DbScanCountModel temp = comboBox.getItemAt(0);
+			if(temp.getCount().intValue() == dbNode.getScanCount()) {
+				comboBox.setSelectedIndex(i);
+			}
+		}
+		comboBox.addItemListener((e) -> {
+			logger.info("item:{}, state:{}", e.getItem(), e.getStateChange());
+			switch (e.getStateChange()) {
+				case ItemEvent.SELECTED:
+					DbScanCountModel dbScanCount = (DbScanCountModel)e.getItem();
+					dbNode.setScanCount(dbScanCount.getCount());
+					break;
+				default:
+					break;
+				}
+		});
+		bar.addSeparator(new Dimension(20, 0));
+		bar.add(comboBox);
+		
 		panel.add(bar, BorderLayout.NORTH);
 		panel.add(scrollPane, BorderLayout.CENTER);
 		tab.addTab(dbNode.getName(), createImageIcon(systemFileManagerIconFile), panel);
@@ -256,7 +284,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 				params.match(match + "*");
 			}
 		}
-		params.count(100);
+		params.count(dbNode.getScanCount());
 		ScanResult<String> keys = client.scan(cursor,params);
 		Vector<Vector<String>> data = new Vector<Vector<String>>();
 		keys.getResult().forEach(k -> {
