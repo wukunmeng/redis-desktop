@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.alee.laf.table.TableRowHeightOptimizer;
 import com.redis.desktop.component.ComboBox;
 import com.redis.desktop.component.CommonComponent;
 import com.redis.desktop.component.MenuItem;
@@ -168,6 +169,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		JToolBar bar = new JToolBar();
 		Table table = dbTable(loadData(dbNode, null), dbNode);
 		JScrollPane scrollPane = new JScrollPane(table);
+		//scrollPane.setRowHeaderView(new TableR);table 行号 需要自己实现
 		JPanel panel = new JPanel(new BorderLayout());
 		JButton home = new JButton(createImageIcon(homeIconFile));
 		home.addActionListener((e) -> tab.setSelectedIndex(0));
@@ -217,10 +219,23 @@ public class JTabbedPaneHelper extends CommonComponent{
 			rowData.add(key);
 			rowData.add("");
 			rowData.add("-1");
-			int index = table.getRowCount();
-			((DefaultTableModel)table.getModel()).addRow(rowData);
-			table.setRowSelectionInterval(index, index + 1);
+			DefaultTableModel tableModel = ((DefaultTableModel)table.getModel());
+			logger.info("row-count:{}", tableModel.getRowCount());
+			tableModel.insertRow(0, rowData);
+			logger.info("row-count:{}", tableModel.getRowCount());
+			table.setRowSelectionInterval(0, 0);
 		});
+		
+//		int row = model.getRowCount() - 1;
+//		int col = 0;
+//		if (table.editCellAt(row, col)) {
+//		    Component editor = table.getEditorComponent();
+//		    editor.requestFocusInWindow();
+//		    Component c = editor.getComponentAt(0, 0);
+//		    if (c != null && c instanceof JTextComponent) {
+//		        ((JTextComponent) c).selectAll();
+//		    }
+//		}
 		
 		deleteItemButton.addActionListener((e) -> {
 			int row = table.getSelectedRow();
@@ -296,14 +311,14 @@ public class JTabbedPaneHelper extends CommonComponent{
 		columnNames.addElement("键");
 		columnNames.addElement("值");
 		columnNames.addElement("TTL");
-		return new DefaultTableModel(data, columnNames);
-	}
-	
-	private Table dbTable(TableModel tableModel, DbNodeModel dbNode) {
-		Table table = new Table(tableModel);
-		table.setFillsViewportHeight(false);
-		table.getModel().addTableModelListener((e) -> {
+		DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+		tableModel.addTableModelListener((e) -> {
 			if(e.getType() == TableModelEvent.INSERT) {
+				logger.info("insert : {}", e.getLastRow());
+				return;
+			}
+			if(e.getType() == TableModelEvent.DELETE) {
+				logger.info("delete : {}", e.getLastRow());
 				return;
 			}
 			DefaultTableModel dtm = (DefaultTableModel)e.getSource();
@@ -318,28 +333,34 @@ public class JTabbedPaneHelper extends CommonComponent{
 			logger.info("lastRow:{}", e.getLastRow());
 			logger.info("type:{}", e.getType());
 			if(e.getType() == TableModelEvent.UPDATE) {
-				Jedis client = redisInfoStore.getRedisClient(dbNode);
-				if(client == null) {
-					JOptionPane.showMessageDialog(table, 
+				Jedis c = redisInfoStore.getRedisClient(dbNode);
+				if(c == null) {
+					JOptionPane.showMessageDialog(tab, 
 							"无法获取Redis:" + dbNode.getRedisNodeModel().getAddress() + ",请重连接.", "错误提示", JOptionPane.ERROR_MESSAGE);
 					return;
 				} 
 				if(key == null) {
-					JOptionPane.showMessageDialog(table, "key不存在,无法编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(tab, "key不存在,无法编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				if(client.exists(key).booleanValue()
 						&& !StringUtils.equalsIgnoreCase("string", client.type(key))){
-					JOptionPane.showMessageDialog(table, "暂不支持该类型编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(tab, "暂不支持该类型编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
 				}
 				if(e.getColumn() == 1) {
-					client.set(key, value);
+					c.set(key, value);
 				}
 				if(e.getColumn() == 2) {
-					client.expire(key, NumberUtils.toInt(value));
+					c.expire(key, NumberUtils.toInt(value));
 				}
 			}
 		});
+		return tableModel;
+	}
+	
+	private Table dbTable(TableModel tableModel, DbNodeModel dbNode) {
+		Table table = new Table(tableModel);
+		table.setFillsViewportHeight(false);
 		return table;
 	}
 }

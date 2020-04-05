@@ -8,14 +8,12 @@
 
 package com.redis.desktop.job;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.redis.desktop.store.RedisInfoStore;
 
 /**
  * ClassName:RedisClientManger <br/>
@@ -32,15 +30,15 @@ import com.redis.desktop.store.RedisInfoStore;
 @EnableAsync
 public class RedisClientManger extends AbstractJobComponent{
 
-	@Autowired
-	private RedisInfoStore redisInfoStore;
+//	@Autowired
+//	private RedisInfoStore redisInfoStore;
 	
 	@Async
 	@Scheduled(fixedDelay = 10000L)
 	public void checkClientConnect() {
-		logger.info("start check:{}", System.currentTimeMillis());
-		redisInfoStore.checkClient();
-		logger.info("end check:{}", System.currentTimeMillis());
+//		logger.info("start check:{}", System.currentTimeMillis());
+//		redisInfoStore.checkClient();
+//		logger.info("end check:{}", System.currentTimeMillis());
 	}
 }
 
