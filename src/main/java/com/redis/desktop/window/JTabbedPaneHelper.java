@@ -39,7 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import com.alee.laf.table.TableRowHeightOptimizer;
 import com.redis.desktop.component.ComboBox;
 import com.redis.desktop.component.CommonComponent;
 import com.redis.desktop.component.MenuItem;
@@ -203,7 +202,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		comboBox.addItem(new DbScanCountModel("scan-500", 500));
 		comboBox.addItem(new DbScanCountModel("scan-1000", 1000));
 		for(int i = 0; i < comboBox.getItemCount(); i++) {
-			DbScanCountModel temp = comboBox.getItemAt(0);
+			DbScanCountModel temp = comboBox.getItemAt(i);
 			if(temp.getCount().intValue() == dbNode.getScanCount()) {
 				comboBox.setSelectedIndex(i);
 			}

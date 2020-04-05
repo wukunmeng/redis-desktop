@@ -38,7 +38,7 @@ public class DbNodeModel implements Serializable {
 	
 	private Integer tabIndex;
 	
-	private int scanCount = 100;
+	private int scanCount = 10;
 
 	public String getName() {
 		StringBuilder name = new StringBuilder();
