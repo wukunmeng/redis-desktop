@@ -217,14 +217,14 @@ public class JTabbedPaneHelper extends CommonComponent{
 			rowData.add(key);
 			rowData.add("");
 			rowData.add("-1");
-//			int index = table.getRowCount();
+			int index = table.getRowCount();
 			((DefaultTableModel)table.getModel()).addRow(rowData);
-//			table.setRowSelectionInterval(index, index + 1);
+			table.setRowSelectionInterval(index, index + 1);
 		});
 		
 		deleteItemButton.addActionListener((e) -> {
 			int row = table.getSelectedRow();
-			logger.info("");
+			logger.info("select row:{}", row);
 			if(row >= 0) {
 				Object objectKey = table.getValueAt(row, 0);
 				if(objectKey == null) {
