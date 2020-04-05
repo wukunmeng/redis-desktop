@@ -48,7 +48,7 @@ public class RedisEditFrame extends JFrame{
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private Tree tree;
+	private TreeHelper tree;
 	
 	@Autowired
 	private CustomerComponent customerComponent;

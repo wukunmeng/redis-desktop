@@ -69,7 +69,7 @@ public class MainFrame extends JFrame{
 	private String title;
 	
 	@Autowired
-	private Tree tree;
+	private TreeHelper tree;
 	
 	@Autowired
 	private JTabbedPaneHelper jTabbedPaneHelper;

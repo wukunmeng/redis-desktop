@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
 import com.redis.desktop.listener.event.RedisCloseEvent;
+import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.model.RedisNodeModel;
 
 import redis.clients.jedis.Jedis;
@@ -53,6 +54,17 @@ public class RedisInfoStore extends CommonComponent{
 	
 	public Jedis getRedisClient(String name) {
 		return clients.get(name);
+	}
+	
+	public Jedis getRedisClient(DbNodeModel dbNode) {
+		Jedis redis = clients.get(dbNode.getRedisNodeModel().getAddress());
+		if(redis == null) {
+			return null;
+		}
+		if(dbNode.getDb() != null && dbNode.getDb() >= 0) {
+			redis.select(dbNode.getDb());
+		}
+		return redis;
 	}
 	
 	@PreDestroy

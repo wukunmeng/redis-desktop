@@ -11,9 +11,6 @@ package com.redis.desktop.window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -24,27 +21,29 @@ import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.redis.desktop.component.ComboBox;
 import com.redis.desktop.component.CommonComponent;
+import com.redis.desktop.component.MenuItem;
 import com.redis.desktop.component.TabbedPane;
+import com.redis.desktop.component.Table;
 import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.model.DbScanCountModel;
 import com.redis.desktop.store.RedisInfoStore;
@@ -104,32 +103,13 @@ public class JTabbedPaneHelper extends CommonComponent{
 		Font tabFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
 		tab.setFont(tabFont);
 		JPanel propertyPanel = new JPanel(new BorderLayout());
-		JScrollPane propertyScrollPane = new JScrollPane(property());
+		JScrollPane propertyScrollPane = new JScrollPane(sytemProperty());
 		propertyPanel.add(propertyScrollPane, BorderLayout.CENTER);
 		tab.addTab("首页", createImageIcon(homeTabIconFile), propertyPanel);
 		nodes.add("首页");
 		
-//		JPanel panel = new JPanel(new BorderLayout());
-//		JScrollPane scrollPane = new JScrollPane(table());
-//		panel.add(bar, BorderLayout.NORTH);
-//		panel.add(scrollPane, BorderLayout.CENTER);
-//		tab.addTab("系统属性", createImageIcon(systemFileManagerIconFile), panel);
-//		nodes.add("系统属性");
-		//TabPane tabOne = new TabPane("系统属性", createImageIcon(closeTabIconFile));
-		//tab.setTabComponentAt(1, tabOne);
-//		tab.addChangeListener((e) -> {
-//			if(e.getSource() instanceof TabPane) {
-//				((TabPane)e.getSource()).selected();
-//			}
-//			for(int i = 0; i < tab.getTabCount(); i++) {
-//				if(tab.getTabComponentAt(i) != e.getSource()) {
-//					tab.getTabComponentAt(i).setBackground(Color.BLACK);
-//				}
-//			}
-//		});
 		JPopupMenu m = new JPopupMenu();
-		JMenuItem pupop = new JMenuItem("关闭");
-		pupop.setFont(new Font(Font.MONOSPACED, Font.BOLD, 13));
+		MenuItem pupop = new MenuItem("关闭");
 		m.add(pupop);
 		pupop.addActionListener((e)->{
 			int index = tab.getSelectedIndex();
@@ -151,34 +131,10 @@ public class JTabbedPaneHelper extends CommonComponent{
 			}
 		});
 	}
-	
-	public JTable table() {
+	private Table sytemProperty() {
 		Vector<String> columnNames = new Vector<String>();
-		columnNames.addElement("环境变量");
-		columnNames.addElement("环境变量值");
-		Vector<Vector<String>> data = new Vector<Vector<String>>();
-		System.getenv().forEach((k,v) -> {
-			Vector<String> row = new Vector<String>();
-			row.addElement(k);
-			row.addElement(v);
-			data.addElement(row);
-		});
-		
-		JTable table = new JTable(data, columnNames);
-		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
-		table.getTableHeader().setFont(headerFont);
-		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
-		table.setFont(tableFont);
-		table.setRowHeight(36);
-		table.setFillsViewportHeight(true);
-		return table;
-	}
-	
-	
-	private JTable property() {
-		Vector<String> columnNames = new Vector<String>();
-		columnNames.addElement("属性键");
-		columnNames.addElement("属性值");
+		columnNames.addElement("系统属性键");
+		columnNames.addElement("系统属性值");
 		Vector<Vector<String>> data = new Vector<Vector<String>>();
 		System.getProperties().keySet().forEach(k -> {
 			if(String.valueOf(k).startsWith("java.")) {
@@ -189,24 +145,9 @@ public class JTabbedPaneHelper extends CommonComponent{
 			}
 		});
 		
-		JTable table = new JTable(data, columnNames) {
-			private static final long serialVersionUID = 1L;
-
-			public void paintComponent(Graphics g){
-		        Graphics2D g2d=(Graphics2D)g;   
-		        g2d.setRenderingHint(
-		             RenderingHints.KEY_ANTIALIASING,
-		             RenderingHints.VALUE_ANTIALIAS_ON);
-		        super.paintComponent(g2d);
-		     }
-		};
-		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
-		table.getTableHeader().setFont(headerFont);
-		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
-		table.setFont(tableFont);
-		table.setRowHeight(36);
+		Table table = new Table(data, columnNames);
 		table.setEnabled(false);
-		table.setFillsViewportHeight(false);
+		table.setFillsViewportHeight(true);
 		return table;
 	}
 	
@@ -225,7 +166,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 	
 	public void createTab(DbNodeModel dbNode) {
 		JToolBar bar = new JToolBar();
-		JTable table = dbTable(loadData(dbNode, null));
+		Table table = dbTable(loadData(dbNode, null), dbNode);
 		JScrollPane scrollPane = new JScrollPane(table);
 		JPanel panel = new JPanel(new BorderLayout());
 		JButton home = new JButton(createImageIcon(homeIconFile));
@@ -246,11 +187,15 @@ public class JTabbedPaneHelper extends CommonComponent{
 		});
 		bar.add(queryButton);
 		bar.addSeparator(new Dimension(10, 0));
-		bar.add(new JButton(createImageIcon(addItemIconFile)));
-		bar.add(new JButton(createImageIcon(updateItemIconFile)));
-		bar.add(new JButton(createImageIcon(deleteItemIconFile)));
+		JButton addItemButton = new JButton(createImageIcon(addItemIconFile));
+		bar.add(addItemButton);
+//		JButton button = new JButton(createImageIcon(updateItemIconFile));
+//		button.setEnabled(false);
+//		bar.add(button);
+		JButton deleteItemButton = new JButton(createImageIcon(deleteItemIconFile));
+		bar.add(deleteItemButton);
 		
-		JComboBox<DbScanCountModel> comboBox = new JComboBox<DbScanCountModel>();
+		ComboBox<DbScanCountModel> comboBox = new ComboBox<DbScanCountModel>();
 		comboBox.addItem(new DbScanCountModel("scan-10", 10));
 		comboBox.addItem(new DbScanCountModel("scan-100", 100));
 		comboBox.addItem(new DbScanCountModel("scan-500", 500));
@@ -261,6 +206,44 @@ public class JTabbedPaneHelper extends CommonComponent{
 				comboBox.setSelectedIndex(i);
 			}
 		}
+		
+		addItemButton.addActionListener((e) -> {
+			String key = JOptionPane.showInputDialog(table, "请输入Key", "输入框", JOptionPane.INFORMATION_MESSAGE);
+			if(StringUtils.isBlank(key)) {
+				JOptionPane.showMessageDialog(table, "Key值不可以为空", "错误提示", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			Vector<String> rowData = new Vector<String>();
+			rowData.add(key);
+			rowData.add("");
+			rowData.add("-1");
+//			int index = table.getRowCount();
+			((DefaultTableModel)table.getModel()).addRow(rowData);
+//			table.setRowSelectionInterval(index, index + 1);
+		});
+		
+		deleteItemButton.addActionListener((e) -> {
+			int row = table.getSelectedRow();
+			logger.info("");
+			if(row >= 0) {
+				Object objectKey = table.getValueAt(row, 0);
+				if(objectKey == null) {
+					JOptionPane.showMessageDialog(table, "无法删除不存在的Key", "错误提示", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				String key = objectKey.toString();
+				Jedis client = redisInfoStore.getRedisClient(dbNode);
+				if(client == null) {
+					JOptionPane.showMessageDialog(table, 
+							"无法获取Redis:" + dbNode.getRedisNodeModel().getAddress() + ",请重连接.", "错误提示", JOptionPane.ERROR_MESSAGE);
+					return;
+				} 
+				client.del(key);
+				((DefaultTableModel)table.getModel()).removeRow(row);
+				return;
+			}
+			JOptionPane.showMessageDialog(table, "请选择要删除的行", "错误提示", JOptionPane.INFORMATION_MESSAGE);
+		});
 		comboBox.addItemListener((e) -> {
 			logger.info("item:{}, state:{}", e.getItem(), e.getStateChange());
 			switch (e.getStateChange()) {
@@ -283,11 +266,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 	}
 	
 	private DefaultTableModel loadData(DbNodeModel dbNode, String match) {
-		Jedis client = 
-				redisInfoStore.getRedisClient(dbNode.getRedisNodeModel().getAddress());
-		if(dbNode.getDb() != null && dbNode.getDb() >= 0) {
-			client.select(dbNode.getDb());
-		}
+		Jedis client = redisInfoStore.getRedisClient(dbNode);
 		String cursor = ScanParams.SCAN_POINTER_START;
 		ScanParams params = new ScanParams();
 		if(StringUtils.isBlank(match)) {
@@ -320,35 +299,47 @@ public class JTabbedPaneHelper extends CommonComponent{
 		return new DefaultTableModel(data, columnNames);
 	}
 	
-	private JTable dbTable(TableModel tableModel) {
-		JTable table = new JTable(tableModel) {
-			private static final long serialVersionUID = 1L;
-
-			public void paintComponent(Graphics g){
-		        Graphics2D g2d=(Graphics2D)g;   
-		        g2d.setRenderingHint(
-		             RenderingHints.KEY_ANTIALIASING,
-		             RenderingHints.VALUE_ANTIALIAS_ON);
-		        super.paintComponent(g2d);
-		     }
-		};
-		table.setTableHeader(new JTableHeader(table.getColumnModel()) {
-			private static final long serialVersionUID = 1L;
-
-			public void paintComponent(Graphics g){
-		        Graphics2D g2d=(Graphics2D)g;   
-		        g2d.setRenderingHint(
-		             RenderingHints.KEY_ANTIALIASING,
-		             RenderingHints.VALUE_ANTIALIAS_ON);
-		        super.paintComponent(g2d);
-		     }
-		});
-		Font headerFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
-		table.getTableHeader().setFont(headerFont);
-		Font tableFont = new Font(Font.MONOSPACED, Font.PLAIN, 15);
-		table.setFont(tableFont);
-		table.setRowHeight(36);
+	private Table dbTable(TableModel tableModel, DbNodeModel dbNode) {
+		Table table = new Table(tableModel);
 		table.setFillsViewportHeight(false);
+		table.getModel().addTableModelListener((e) -> {
+			if(e.getType() == TableModelEvent.INSERT) {
+				return;
+			}
+			DefaultTableModel dtm = (DefaultTableModel)e.getSource();
+			Object objectKey = dtm.getValueAt(e.getFirstRow(), 0);
+			String key = objectKey == null ? null : objectKey.toString();
+			Object currentValue = dtm.getValueAt(e.getFirstRow(), e.getColumn());
+			String value = currentValue == null ? null : currentValue.toString();
+			logger.info("object:{}", currentValue);
+			logger.info("value:{}", value);
+			logger.info("first:{}", e.getFirstRow());
+			logger.info("column:{}", e.getColumn());
+			logger.info("lastRow:{}", e.getLastRow());
+			logger.info("type:{}", e.getType());
+			if(e.getType() == TableModelEvent.UPDATE) {
+				Jedis client = redisInfoStore.getRedisClient(dbNode);
+				if(client == null) {
+					JOptionPane.showMessageDialog(table, 
+							"无法获取Redis:" + dbNode.getRedisNodeModel().getAddress() + ",请重连接.", "错误提示", JOptionPane.ERROR_MESSAGE);
+					return;
+				} 
+				if(key == null) {
+					JOptionPane.showMessageDialog(table, "key不存在,无法编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if(client.exists(key).booleanValue()
+						&& !StringUtils.equalsIgnoreCase("string", client.type(key))){
+					JOptionPane.showMessageDialog(table, "暂不支持该类型编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
+				}
+				if(e.getColumn() == 1) {
+					client.set(key, value);
+				}
+				if(e.getColumn() == 2) {
+					client.expire(key, NumberUtils.toInt(value));
+				}
+			}
+		});
 		return table;
 	}
 }

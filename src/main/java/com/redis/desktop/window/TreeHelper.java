@@ -8,10 +8,6 @@
 
 package com.redis.desktop.window;
 
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -31,6 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
+import com.redis.desktop.component.Tree;
 import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.model.RedisNodeModel;
 import com.redis.desktop.store.RedisInfoStore;
@@ -49,7 +46,7 @@ import redis.clients.jedis.Jedis;
  * @see
  */
 @Component
-public class Tree extends CommonComponent {
+public class TreeHelper extends CommonComponent {
 
 	@Value("classpath:icons/icon_expand_16.png")
 	private Resource expandIconFile;
@@ -66,7 +63,7 @@ public class Tree extends CommonComponent {
 	@Value("classpath:icons/icon_tree-leaf_16.png")
 	private Resource leafIconFile;
 	
-	private JTree tree;
+	private Tree tree;
 	
 	@Autowired
 	private MainFrame frame;
@@ -87,23 +84,7 @@ public class Tree extends CommonComponent {
 			root.add(new DefaultMutableTreeNode(node));
 			redisInfoStore.add(node.getAddress(), node);
 		}
-		tree = new JTree(root) {
-			/**
-			 * serialVersionUID:TODO(用一句话描述这个变量表示什么).
-			 * @since JDK 1.8
-			 */
-			private static final long serialVersionUID = 1L;
-
-			public void paintComponent(Graphics g){
-		        Graphics2D g2d=(Graphics2D)g;   
-		        g2d.setRenderingHint(
-		             RenderingHints.KEY_ANTIALIASING,
-		             RenderingHints.VALUE_ANTIALIAS_ON);
-		        super.paintComponent(g2d);
-		     }
-		};
-		Font font = new Font(Font.MONOSPACED, Font.BOLD, 15);
-		tree.setFont(font);
+		tree = new Tree(root);
 		treeCellRenderer((DefaultTreeCellRenderer) tree.getCellRenderer());
 		//treeUI((BasicTreeUI)tree.getUI());
 		tree.collapsePath(new TreePath(root.getRoot()));
@@ -165,7 +146,7 @@ public class Tree extends CommonComponent {
 //		treeUI.setExpandedIcon(createImageIcon(expandIconFile));
 //	}
 
-	public JTree tree() {
+	public Tree tree() {
 		return tree;
 	}
 	

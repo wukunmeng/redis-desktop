@@ -57,7 +57,7 @@ public class FrameToolBarHelper extends CommonComponent {
 	private SystemExitListener systemExitListener;
 	
 	@Autowired
-	private Tree tree;
+	private TreeHelper tree;
 	
 	@Autowired
 	private RedisInfoStore redisInfoStore;
