@@ -20,7 +20,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -159,14 +158,10 @@ public class TreeHelper extends CommonComponent {
 	public void processRedisNode(JTree tree, DefaultMutableTreeNode clickNode) {
 		RedisNodeModel redisNode = (RedisNodeModel)clickNode.getUserObject();
 		RedisNodeModel node = redisInfoStore.getRedis(redisNode.getAddress());
+		Jedis client = null;
 		try {
 			if(node != null && clickNode.getChildCount() < 1) {
-				Jedis client = new Jedis(node.getAddress(), node.getPort(), 30000);
-				if(!StringUtils.isBlank(node.getAuthorization())) {
-					client.auth(node.getAuthorization());
-				}
-				logger.info("ping:{}",client.ping());
-				redisInfoStore.add(node.getAddress(), client);
+				client = redisInfoStore.getRedisClient(node);
 				List<String> list = client.configGet("databases");
 				if(list == null || list.size() != 2) {
 					logger.info("database-index:{}", list);
@@ -188,6 +183,10 @@ public class TreeHelper extends CommonComponent {
 		} catch (Exception ex) {
 			logger.error("connect:{}, exception:{}", redisNode.getAddress(), ex.getMessage());
 			JOptionPane.showMessageDialog(frame, "不能连接:" + redisNode.getAddress(), "错误提示框", JOptionPane.ERROR_MESSAGE);
+		} finally {
+			if(client != null) {
+				client.close();
+			}
 		}
 	}
 	

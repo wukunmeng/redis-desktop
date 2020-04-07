@@ -247,13 +247,22 @@ public class JTabbedPaneHelper extends CommonComponent{
 				}
 				String key = objectKey.toString();
 				Jedis client = redisInfoStore.getRedisClient(dbNode);
-				if(client == null) {
+				try {
+					if(client == null) {
+						JOptionPane.showMessageDialog(table, 
+								"无法获取Redis:" + dbNode.getRedisNodeModel().getAddress() + ",请重连接.", "错误提示", JOptionPane.ERROR_MESSAGE);
+						return;
+					} 
+					client.del(key);
+					((DefaultTableModel)table.getModel()).removeRow(row);
+				} catch (Exception ex) {
 					JOptionPane.showMessageDialog(table, 
-							"无法获取Redis:" + dbNode.getRedisNodeModel().getAddress() + ",请重连接.", "错误提示", JOptionPane.ERROR_MESSAGE);
-					return;
-				} 
-				client.del(key);
-				((DefaultTableModel)table.getModel()).removeRow(row);
+							"Exception:" + ex.getMessage(), "错误提示", JOptionPane.ERROR_MESSAGE);
+				} finally {
+					if (client != null) {
+						client.close();
+					}
+				}
 				return;
 			}
 			JOptionPane.showMessageDialog(table, "请选择要删除的行", "错误提示", JOptionPane.INFORMATION_MESSAGE);
@@ -281,31 +290,45 @@ public class JTabbedPaneHelper extends CommonComponent{
 	
 	private DefaultTableModel loadData(DbNodeModel dbNode, String match) {
 		Jedis client = redisInfoStore.getRedisClient(dbNode);
-		String cursor = ScanParams.SCAN_POINTER_START;
-		ScanParams params = new ScanParams();
-		if(StringUtils.isBlank(match)) {
-			params.match("*");
-		} else {
-			if(match.contains("*")) {
-				params.match(match);
+		Vector<Vector<String>> data = new Vector<Vector<String>>();
+		try {
+			if(client == null) {
+				JOptionPane.showMessageDialog(tab, 
+						"无法获取Redis:" + dbNode.getRedisNodeModel().getAddress() + ",请重连接.", "错误提示", JOptionPane.ERROR_MESSAGE);
+				return new DefaultTableModel();
+			}
+			String cursor = ScanParams.SCAN_POINTER_START;
+			ScanParams params = new ScanParams();
+			if(StringUtils.isBlank(match)) {
+				params.match("*");
 			} else {
-				params.match(match + "*");
+				if(match.contains("*")) {
+					params.match(match);
+				} else {
+					params.match(match + "*");
+				}
+			}
+			params.count(dbNode.getScanCount());
+			ScanResult<String> keys = client.scan(cursor,params);
+			keys.getResult().forEach(k -> {
+				Vector<String> row = new Vector<String>();
+				row.add(k);
+				if(StringUtils.equalsIgnoreCase("string", client.type(k))){
+					row.add(client.get(k));
+				} else {
+					row.add("==unknow--不可读==");
+				}
+				row.add(String.valueOf(client.ttl(k)));
+				data.add(row);
+			});
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(tab, 
+					"Exception:" + ex.getMessage(), "错误提示", JOptionPane.ERROR_MESSAGE);
+		} finally {
+			if(client != null) {
+				client.close();
 			}
 		}
-		params.count(dbNode.getScanCount());
-		ScanResult<String> keys = client.scan(cursor,params);
-		Vector<Vector<String>> data = new Vector<Vector<String>>();
-		keys.getResult().forEach(k -> {
-			Vector<String> row = new Vector<String>();
-			row.add(k);
-			if(StringUtils.equalsIgnoreCase("string", client.type(k))){
-				row.add(client.get(k));
-			} else {
-				row.add("==unknow--不可读==");
-			}
-			row.add(String.valueOf(client.ttl(k)));
-			data.add(row);
-		});
 		Vector<String> columnNames = new Vector<String>();
 		columnNames.addElement("键");
 		columnNames.addElement("值");
@@ -333,24 +356,33 @@ public class JTabbedPaneHelper extends CommonComponent{
 			logger.info("type:{}", e.getType());
 			if(e.getType() == TableModelEvent.UPDATE) {
 				Jedis c = redisInfoStore.getRedisClient(dbNode);
-				if(c == null) {
+				try {
+					if(c == null) {
+						JOptionPane.showMessageDialog(tab, 
+								"无法获取Redis:" + dbNode.getRedisNodeModel().getAddress() + ",请重连接.", "错误提示", JOptionPane.ERROR_MESSAGE);
+						return;
+					} 
+					if(key == null) {
+						JOptionPane.showMessageDialog(tab, "key不存在,无法编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					if(client.exists(key).booleanValue()
+							&& !StringUtils.equalsIgnoreCase("string", client.type(key))){
+						JOptionPane.showMessageDialog(tab, "暂不支持该类型编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
+					}
+					if(e.getColumn() == 1) {
+						c.set(key, value);
+					}
+					if(e.getColumn() == 2) {
+						c.expire(key, NumberUtils.toInt(value));
+					}
+				} catch (Exception ex) {
 					JOptionPane.showMessageDialog(tab, 
-							"无法获取Redis:" + dbNode.getRedisNodeModel().getAddress() + ",请重连接.", "错误提示", JOptionPane.ERROR_MESSAGE);
-					return;
-				} 
-				if(key == null) {
-					JOptionPane.showMessageDialog(tab, "key不存在,无法编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				if(client.exists(key).booleanValue()
-						&& !StringUtils.equalsIgnoreCase("string", client.type(key))){
-					JOptionPane.showMessageDialog(tab, "暂不支持该类型编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
-				}
-				if(e.getColumn() == 1) {
-					c.set(key, value);
-				}
-				if(e.getColumn() == 2) {
-					c.expire(key, NumberUtils.toInt(value));
+							"Exception:" + ex.getMessage(), "错误提示", JOptionPane.ERROR_MESSAGE);
+				} finally {
+					if(client != null) {
+						client.close();
+					}
 				}
 			}
 		});
