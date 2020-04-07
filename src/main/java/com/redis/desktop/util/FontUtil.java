@@ -47,5 +47,9 @@ public abstract class FontUtil {
 	public static Font createMenuItemFont() {
 		return defaultFont_15;
 	}
+	
+	public static Font createComboBoxFont() {
+		return defaultFont_14;
+	}
 }
 

@@ -14,6 +14,8 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComboBox;
 
+import com.redis.desktop.util.FontUtil;
+
 /**
  * ClassName:ComboBox <br/>
  * Function: TODO ADD FUNCTION. <br/>
@@ -34,6 +36,7 @@ public class ComboBox<E> extends JComboBox<E> {
 	
 	public ComboBox() {
 		super();
+		setFont(FontUtil.createComboBoxFont());
 	}
 
 	public void paintComponent(Graphics g){
