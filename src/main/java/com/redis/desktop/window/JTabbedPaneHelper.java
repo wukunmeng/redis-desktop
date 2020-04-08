@@ -26,7 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
@@ -44,6 +43,7 @@ import com.redis.desktop.component.CommonComponent;
 import com.redis.desktop.component.MenuItem;
 import com.redis.desktop.component.TabbedPane;
 import com.redis.desktop.component.Table;
+import com.redis.desktop.component.TextField;
 import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.model.DbScanCountModel;
 import com.redis.desktop.store.RedisInfoStore;
@@ -174,7 +174,7 @@ public class JTabbedPaneHelper extends CommonComponent{
 		home.addActionListener((e) -> tab.setSelectedIndex(0));
 		bar.add(home);
 		bar.addSeparator(new Dimension(20, 0));
-		JTextField queryText = new JTextField(30);
+		TextField queryText = new TextField(30);
 //		queryText.getDocument().addDocumentListener(new ChangedValueListener() {
 //			@Override
 //			public void valuechanged(DocumentEvent e, String value) {

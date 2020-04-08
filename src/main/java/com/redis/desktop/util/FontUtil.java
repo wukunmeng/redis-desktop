@@ -22,6 +22,8 @@ import java.awt.Font;
 
 public abstract class FontUtil {
 
+	private static Font defaultFont_12 = new Font(Font.MONOSPACED, Font.BOLD, 12);
+	
 	private static Font defaultFont_14 = new Font(Font.MONOSPACED, Font.BOLD, 14);
 	
 	private static Font defaultFont_15 = new Font(Font.MONOSPACED, Font.BOLD, 15);
@@ -50,6 +52,10 @@ public abstract class FontUtil {
 	
 	public static Font createComboBoxFont() {
 		return defaultFont_14;
+	}
+	
+	public static Font createTextFieldFont() {
+		return defaultFont_12;
 	}
 }
 
