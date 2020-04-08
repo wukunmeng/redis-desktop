@@ -371,7 +371,17 @@ public class JTabbedPaneHelper extends CommonComponent{
 						JOptionPane.showMessageDialog(tab, "暂不支持该类型编辑.", "错误提示", JOptionPane.ERROR_MESSAGE);
 					}
 					if(e.getColumn() == 1) {
-						c.set(key, value);
+						long ttl = c.ttl(key);
+						if(StringUtils.equals(c.get(key), value)) {
+							logger.info("数据未变更,不需要修改:{}", key);
+							return ;
+						}
+						if(ttl == -1) {
+							c.set(key, value);
+						} else if(ttl > 0) {
+							c.set(key, value);
+							c.expire(key, (int)ttl);
+						}
 					}
 					if(e.getColumn() == 2) {
 						c.expire(key, NumberUtils.toInt(value));
