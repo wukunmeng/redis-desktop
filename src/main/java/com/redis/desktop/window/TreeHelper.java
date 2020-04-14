@@ -8,12 +8,14 @@
 
 package com.redis.desktop.window;
 
+import java.awt.MouseInfo;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -26,6 +28,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CommonComponent;
+import com.redis.desktop.component.MenuItem;
 import com.redis.desktop.component.Tree;
 import com.redis.desktop.model.DbNodeModel;
 import com.redis.desktop.model.RedisNodeModel;
@@ -87,9 +90,20 @@ public class TreeHelper extends CommonComponent {
 		treeCellRenderer((DefaultTreeCellRenderer) tree.getCellRenderer());
 		//treeUI((BasicTreeUI)tree.getUI());
 		tree.collapsePath(new TreePath(root.getRoot()));
+		
+		//popmenu
+		JPopupMenu closeRedis = new JPopupMenu();
+		MenuItem pupop = new MenuItem("关闭");
+		closeRedis.add(pupop);
+		pupop.addActionListener((e)->{
+			//int index = tree.getSelectionModel();
+			//m.setVisible(false);
+		});
+		
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				logger.info("client:{}", e.getClickCount());
+				logger.info("button:{}", e.getButton());
 				if(e.getClickCount() == 2) {
 					JTree tree = (JTree)e.getSource();
 					logger.info("client:{}", e.getSource().getClass().getName());
@@ -110,6 +124,12 @@ public class TreeHelper extends CommonComponent {
 						return;
 					}
 					logger.info("path:{}",currentTreeNode.toString());
+				}
+
+				if(e.getClickCount() == 1) {
+					if(e.getButton() == MouseEvent.BUTTON2) {
+						closeRedis.setVisible(true);
+					}
 				}
 			}
 		});
