@@ -25,6 +25,7 @@ import java.io.Serializable;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -41,7 +42,7 @@ public abstract class CommonComponent implements ApplicationContextAware {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	@Value("${temp.path:/home/wukm/dwhelper/data}")
+	@Value("${redis.data.store.path:/home/wukm/dwhelper}")
 	private String dataPath;
 	
 	private ApplicationContext applicationContext;
@@ -77,7 +78,7 @@ public abstract class CommonComponent implements ApplicationContextAware {
 	}
 	
 	public void deleteObject(String fileName) {
-		File file = new File(new File(dataPath),fileName);
+		File file = new File(dataPath(),fileName);
 		if(file.exists()) {
 			FileUtils.deleteQuietly(file);
 		}
@@ -100,7 +101,7 @@ public abstract class CommonComponent implements ApplicationContextAware {
 	
 	@SuppressWarnings("unchecked")
 	public <T> T readObject(String fileName) {
-		File file = new File(new File(dataPath),fileName);
+		File file = new File(dataPath(),fileName);
 		try {
 			return (T)SerializationUtils.deserialize(
 					FileUtils.readFileToByteArray(file));
@@ -117,6 +118,29 @@ public abstract class CommonComponent implements ApplicationContextAware {
 	
 	public ApplicationContext getContext() {
 		return this.applicationContext;
+	}
+	
+	private File dataPath() {
+		if(StringUtils.isBlank(dataPath)) {
+			logger.info("user.dir:{}", System.getProperty("user.dir"));
+			File userDir = new File(System.getProperty("user.dir"));
+			File dataPath = new File(userDir,"data");
+			if(!dataPath.exists()) {
+				dataPath.mkdirs();
+			}
+			return dataPath;
+		}
+		try {
+			File userDir = new File(dataPath);
+			File dataPath = new File(userDir,"data");
+			if(!dataPath.exists()) {
+				dataPath.mkdirs();
+			}
+			return dataPath;
+		} catch (Exception e) {
+			logger.error("exception:{}", e.getMessage());
+			return null;
+		}
 	}
 }
 
