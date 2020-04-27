@@ -67,7 +67,7 @@ public abstract class CommonComponent implements ApplicationContextAware {
 	}
 	
 	public void writeObject(String fileName, Serializable s) {
-		File file = new File(new File(dataPath),fileName);
+		File file = new File(dataPath(),fileName);
 		try {
 			FileUtils.writeByteArrayToFile(file, 
 					SerializationUtils.serialize(s));
