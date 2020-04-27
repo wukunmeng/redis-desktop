@@ -42,7 +42,7 @@ public abstract class CommonComponent implements ApplicationContextAware {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	@Value("${redis.data.store.path:/home/wukm/dwhelper}")
+	@Value("${redis.data.store.path:}")
 	private String dataPath;
 	
 	private ApplicationContext applicationContext;
@@ -85,7 +85,7 @@ public abstract class CommonComponent implements ApplicationContextAware {
 	}
 	
 	public String[] listDataFile() {
-		File dir = new File(dataPath);
+		File dir = dataPath();
 		return dir.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
