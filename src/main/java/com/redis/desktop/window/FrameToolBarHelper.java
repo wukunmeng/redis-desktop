@@ -10,6 +10,7 @@ package com.redis.desktop.window;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -60,6 +61,9 @@ public class FrameToolBarHelper extends CommonComponent {
 	private TreeHelper tree;
 	
 	@Autowired
+	private MainFrame mainFrame;
+	
+	@Autowired
 	private RedisInfoStore redisInfoStore;
 	
 	@PostConstruct
@@ -70,7 +74,20 @@ public class FrameToolBarHelper extends CommonComponent {
 		addRedisServer.addActionListener((e)-> getBean(RedisEditFrame.class).showWindow());
 		toolBar.add(addRedisServer);
 		
-		toolBar.add(new JButton(createImageIcon(updateRedisServerIconFile)));
+		JButton editRedisServer = new JButton(createImageIcon(updateRedisServerIconFile));
+		editRedisServer.setToolTipText("编辑Redis");
+		editRedisServer.addActionListener((e -> {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.tree().getLastSelectedPathComponent();
+			logger.info("编辑:{}", node);
+			if(node != null && node.getUserObject() instanceof RedisNodeModel) {
+				logger.info("编辑:{}", node.getUserObject());
+				RedisNodeModel n = (RedisNodeModel) node.getUserObject();
+				getBean(RedisEditFrame.class).editRedis(n);
+				return;
+			}
+			JOptionPane.showMessageDialog(mainFrame, "请选择Redis服务节点编辑", "提示框", JOptionPane.INFORMATION_MESSAGE);
+		}));
+		toolBar.add(editRedisServer);
 		
 		JButton deleteRedisServer = new JButton(createImageIcon(deleteRedisServerIconFile));
 		deleteRedisServer.setToolTipText("删除选中Redis");

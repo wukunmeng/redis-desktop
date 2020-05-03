@@ -8,7 +8,6 @@
 
 package com.redis.desktop.window;
 
-import java.awt.MouseInfo;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -170,7 +169,12 @@ public class TreeHelper extends CommonComponent {
 	}
 	
 	public void addChildren(RedisNodeModel redis) {
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode(redis.getAddress());
+		DefaultMutableTreeNode current = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+		if(current != null && current.getUserObject() instanceof RedisNodeModel) {
+			current.setUserObject(redis);
+			return;
+		}
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(redis);
 		DefaultTreeModel model = ((DefaultTreeModel)tree.getModel());
 		model.insertNodeInto(node, root, root.getChildCount());;
 	}
