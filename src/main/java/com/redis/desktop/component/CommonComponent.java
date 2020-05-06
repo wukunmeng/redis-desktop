@@ -7,11 +7,13 @@
  **/
 
 package com.redis.desktop.component;
+import java.awt.Image;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javax.imageio.ImageIO;
 /**
  * ClassName:CommonComponent <br/>
  * Function: TODO ADD FUNCTION. <br/>
@@ -50,6 +52,15 @@ public abstract class CommonComponent implements ApplicationContextAware {
 	public ImageIcon createImageIcon(Resource resource) {
 		try {
 			return new ImageIcon(resource.getURL());
+		} catch (IOException e) {
+			logger.error("IOException:{}", e.getMessage());
+		}
+		return null;
+	}
+	
+	public Image createImage(Resource resource) {
+		try {
+			return ImageIO.read(resource.getURL());
 		} catch (IOException e) {
 			logger.error("IOException:{}", e.getMessage());
 		}

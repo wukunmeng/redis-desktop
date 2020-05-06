@@ -9,6 +9,8 @@
 package com.redis.desktop.window;
 
 import java.awt.Dimension;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -27,6 +29,8 @@ import com.redis.desktop.component.CustomerComponent;
 import com.redis.desktop.listener.SystemExitListener;
 
 import javax.swing.JSplitPane;
+
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 
 /**
@@ -52,6 +56,9 @@ public class MainFrame extends JFrame{
 	
 	@Value("classpath:icons/icon_window_128.png")
 	private Resource windowIconFile;
+	
+	@Value("classpath:icons/icon_window_24.png")
+	private Resource homeIconFile;
 	
 	@Value("${spring.main.frame.width}")
 	private Integer width = 1024;
@@ -97,6 +104,14 @@ public class MainFrame extends JFrame{
 		setLocationRelativeTo(null);
 		setVisible(true);
 		splitPane.setDividerLocation(0.2);
+		
+		if(SystemTray.isSupported()) {
+			try {
+				SystemTray.getSystemTray().add(new TrayIcon(customerComponent.createImage(homeIconFile)));
+			} catch (AWTException e) {
+				logger.error("AWTException:{}", e.getMessage());
+			}
+		}
 	}
 	/**
 	 * Create the application.
