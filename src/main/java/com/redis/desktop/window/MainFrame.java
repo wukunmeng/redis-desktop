@@ -57,7 +57,7 @@ public class MainFrame extends JFrame{
 	@Value("classpath:icons/icon_window_128.png")
 	private Resource windowIconFile;
 	
-	@Value("classpath:icons/icon_window_24.png")
+	@Value("classpath:icons/icon_window_20.png")
 	private Resource homeIconFile;
 	
 	@Value("${spring.main.frame.width}")

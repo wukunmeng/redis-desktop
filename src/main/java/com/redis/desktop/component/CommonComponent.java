@@ -59,12 +59,11 @@ public abstract class CommonComponent implements ApplicationContextAware {
 	}
 	
 	public Image createImage(Resource resource) {
-		try {
-			return ImageIO.read(resource.getURL());
-		} catch (IOException e) {
-			logger.error("IOException:{}", e.getMessage());
+		ImageIcon icon = createImageIcon(resource);
+		if(icon == null) {
+			return null;
 		}
-		return null;
+		return icon.getImage();
 	}
 	
 	@Override
