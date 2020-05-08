@@ -13,7 +13,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
 
-import javax.imageio.ImageIO;
 /**
  * ClassName:CommonComponent <br/>
  * Function: TODO ADD FUNCTION. <br/>
