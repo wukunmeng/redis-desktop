@@ -104,7 +104,7 @@ public class MainFrame extends JFrame{
 		setLocationRelativeTo(null);
 		setVisible(true);
 		splitPane.setDividerLocation(0.2);
-		
+		logger.info("SystemTray isSupported : {}", SystemTray.isSupported());
 		if(SystemTray.isSupported()) {
 			try {
 				SystemTray.getSystemTray().add(new TrayIcon(customerComponent.createImage(homeIconFile)));
