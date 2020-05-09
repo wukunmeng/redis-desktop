@@ -9,8 +9,12 @@
 package com.redis.desktop.window;
 
 import java.awt.Dimension;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -107,7 +111,17 @@ public class MainFrame extends JFrame{
 		logger.info("SystemTray isSupported : {}", SystemTray.isSupported());
 		if(SystemTray.isSupported()) {
 			try {
-				SystemTray.getSystemTray().add(new TrayIcon(customerComponent.createImage(homeIconFile)));
+				TrayIcon tray = new TrayIcon(customerComponent.createImage(homeIconFile));
+				PopupMenu menu = new PopupMenu();
+				MenuItem item = new MenuItem("退出");
+				item.addActionListener(e -> System.exit(0));
+				menu.add(item);
+				tray.addMouseListener(new MouseAdapter() {
+					 public void mouseClicked(MouseEvent e) {
+						 menu.show(jTabbedPaneHelper.tabbedPane(), e.getX(), e.getY());
+					 }
+				});
+				SystemTray.getSystemTray().add(tray);
 			} catch (AWTException e) {
 				logger.error("AWTException:{}", e.getMessage());
 			}
