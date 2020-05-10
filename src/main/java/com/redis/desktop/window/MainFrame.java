@@ -98,7 +98,7 @@ public class MainFrame extends JFrame{
 		ImageIcon imageIcon = customerComponent.createImageIcon(windowIconFile);
 		setIconImage(imageIcon.getImage());
 		setSize(new Dimension(width, height));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setLeftComponent(new JScrollPane(tree.tree()));
 		splitPane.setRightComponent(jTabbedPaneHelper.tabbedPane());
