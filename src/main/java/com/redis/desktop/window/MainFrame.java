@@ -13,13 +13,12 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 import org.slf4j.Logger;
@@ -111,16 +110,14 @@ public class MainFrame extends JFrame{
 		logger.info("SystemTray isSupported : {}", SystemTray.isSupported());
 		if(SystemTray.isSupported()) {
 			try {
-				TrayIcon tray = new TrayIcon(customerComponent.createImage(homeIconFile));
 				PopupMenu menu = new PopupMenu();
-				MenuItem item = new MenuItem("退出");
-				item.addActionListener(e -> System.exit(0));
-				menu.add(item);
-				tray.addMouseListener(new MouseAdapter() {
-					 public void mouseClicked(MouseEvent e) {
-						 menu.show(jTabbedPaneHelper.tabbedPane(), e.getX(), e.getY());
-					 }
-				});
+				MenuItem itemExit = new MenuItem("退出");
+				MenuItem about = new MenuItem("关于");
+				itemExit.addActionListener(e -> systemExitListener.exitSystem());
+				about.addActionListener(e -> showAbout());
+				menu.add(itemExit);
+				menu.add(about);
+				TrayIcon tray = new TrayIcon(customerComponent.createImage(homeIconFile),"Redis客户端",menu);
 				SystemTray.getSystemTray().add(tray);
 			} catch (AWTException e) {
 				logger.error("AWTException:{}", e.getMessage());
@@ -132,6 +129,10 @@ public class MainFrame extends JFrame{
 	 */
 	public MainFrame() {
 		logger.info("create frame:{}", System.currentTimeMillis());
+	}
+	
+	private void showAbout() {
+		JOptionPane.showMessageDialog(this, "Redis桌面客户端(JRedis Desktop Client)", "关于", JOptionPane.INFORMATION_MESSAGE);
 	}
 }
 
