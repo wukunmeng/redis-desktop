@@ -60,8 +60,8 @@ public class MainFrame extends JFrame{
 	@Value("classpath:icons/icon_window_128.png")
 	private Resource windowIconFile;
 	
-	@Value("classpath:icons/icon_window_20.png")
-	private Resource homeIconFile;
+	@Value("classpath:icons/icon_window_24.png")
+	private Resource trayIconFile;
 	
 	@Value("${spring.main.frame.width}")
 	private Integer width = 1024;
@@ -92,7 +92,7 @@ public class MainFrame extends JFrame{
 		//setJMenuBar(topMenuBar);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				systemExitListener.exitSystem();
+				hideFrame();
 			}
 		});
 		ImageIcon imageIcon = customerComponent.createImageIcon(windowIconFile);
@@ -113,11 +113,16 @@ public class MainFrame extends JFrame{
 				PopupMenu menu = new PopupMenu();
 				MenuItem itemExit = new MenuItem("退出");
 				MenuItem about = new MenuItem("关于");
+				MenuItem showFrame = new MenuItem("显示");
 				itemExit.addActionListener(e -> systemExitListener.exitSystem());
 				about.addActionListener(e -> showAbout());
+				showFrame.addActionListener(e -> showFrame());
+				menu.add(showFrame);
 				menu.add(itemExit);
+				menu.addSeparator();
 				menu.add(about);
-				TrayIcon tray = new TrayIcon(customerComponent.createImage(homeIconFile),"Redis客户端",menu);
+				TrayIcon tray = new TrayIcon(customerComponent.createImage(trayIconFile),"Redis客户端",menu);
+				tray.setImageAutoSize(true);
 				SystemTray.getSystemTray().add(tray);
 			} catch (AWTException e) {
 				logger.error("AWTException:{}", e.getMessage());
@@ -133,6 +138,14 @@ public class MainFrame extends JFrame{
 	
 	private void showAbout() {
 		JOptionPane.showMessageDialog(this, "Redis桌面客户端(JRedis Desktop Client)", "关于", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	private void showFrame() {
+		setVisible(true);
+	}
+	
+	private void hideFrame() {
+		setVisible(false);
 	}
 }
 
