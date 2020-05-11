@@ -107,27 +107,12 @@ public class MainFrame extends JFrame{
 		setLocationRelativeTo(null);
 		setVisible(true);
 		splitPane.setDividerLocation(0.2);
-		logger.info("SystemTray isSupported : {}", SystemTray.isSupported());
-		if(SystemTray.isSupported()) {
-			try {
-				PopupMenu menu = new PopupMenu();
-				MenuItem itemExit = new MenuItem("退出");
-				MenuItem about = new MenuItem("关于");
-				MenuItem showFrame = new MenuItem("显示");
-				itemExit.addActionListener(e -> systemExitListener.exitSystem());
-				about.addActionListener(e -> showAbout());
-				showFrame.addActionListener(e -> showFrame());
-				menu.add(showFrame);
-				menu.add(itemExit);
-				menu.addSeparator();
-				menu.add(about);
-				TrayIcon tray = new TrayIcon(customerComponent.createImage(trayIconFile),"Redis客户端",menu);
-				tray.setImageAutoSize(true);
-				SystemTray.getSystemTray().add(tray);
-			} catch (AWTException e) {
-				logger.error("AWTException:{}", e.getMessage());
-			}
-		}
+		trayBoot();
+//		new Thread() {
+//			public void run() {
+//				trayBoot();
+//			}
+//		}.start();
 	}
 	/**
 	 * Create the application.
@@ -146,6 +131,30 @@ public class MainFrame extends JFrame{
 	
 	private void hideFrame() {
 		setVisible(false);
+	}
+	
+	public void trayBoot() {
+		logger.info("SystemTray isSupported : {}", SystemTray.isSupported());
+		if(SystemTray.isSupported()) {
+			try {
+				PopupMenu menu = new PopupMenu();
+				MenuItem itemExit = new MenuItem("退出");
+				MenuItem about = new MenuItem("关于");
+				MenuItem showFrame = new MenuItem("显示");
+				itemExit.addActionListener(e -> systemExitListener.exitSystem());
+				about.addActionListener(e -> showAbout());
+				showFrame.addActionListener(e -> showFrame());
+				menu.add(showFrame);
+				menu.add(itemExit);
+				menu.addSeparator();
+				menu.add(about);
+				TrayIcon tray = new TrayIcon(customerComponent.createImage(trayIconFile),"Redis客户端",menu);
+				tray.setImageAutoSize(false);
+				SystemTray.getSystemTray().add(tray);
+			} catch (AWTException e) {
+				logger.error("AWTException:{}", e.getMessage());
+			}
+		}
 	}
 }
 
