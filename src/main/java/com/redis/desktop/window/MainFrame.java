@@ -107,12 +107,12 @@ public class MainFrame extends JFrame{
 		setLocationRelativeTo(null);
 		setVisible(true);
 		splitPane.setDividerLocation(0.2);
-		trayBoot();
-//		new Thread() {
-//			public void run() {
-//				trayBoot();
-//			}
-//		}.start();
+		//trayBoot();
+		new Thread() {
+			public void run() {
+				trayBoot();
+			}
+		}.start();
 	}
 	/**
 	 * Create the application.
