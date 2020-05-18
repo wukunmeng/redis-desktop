@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.redis.desktop.component.CustomerComponent;
 import com.redis.desktop.listener.SystemExitListener;
+import com.redis.desktop.util.FontUtil;
 
 import javax.swing.JSplitPane;
 
@@ -140,8 +141,11 @@ public class MainFrame extends JFrame{
 			try {
 				PopupMenu menu = new PopupMenu();
 				MenuItem itemExit = new MenuItem("退出");
+				itemExit.setFont(FontUtil.createMenuItemFont());
 				MenuItem about = new MenuItem("关于");
+				about.setFont(FontUtil.createMenuItemFont());
 				MenuItem showFrame = new MenuItem("显示");
+				showFrame.setFont(FontUtil.createMenuItemFont());
 				itemExit.addActionListener(e -> systemExitListener.exitSystem());
 				about.addActionListener(e -> showAbout());
 				showFrame.addActionListener(e -> showFrame());
@@ -149,9 +153,10 @@ public class MainFrame extends JFrame{
 				menu.add(itemExit);
 				menu.addSeparator();
 				menu.add(about);
-				TrayIcon tray = new TrayIcon(customerComponent.createImage(trayIconFile),"Redis客户端",menu);
-				tray.setImageAutoSize(true);
-				SystemTray.getSystemTray().add(tray);
+				TrayIcon trayIcon = new TrayIcon(customerComponent.createImage(trayIconFile),"Redis客户端",menu);
+				trayIcon.setImageAutoSize(true);
+				SystemTray tray = SystemTray.getSystemTray();
+				tray.add(trayIcon);
 			} catch (AWTException e) {
 				logger.error("AWTException:{}", e.getMessage());
 			}
