@@ -105,14 +105,15 @@ public class MainFrame extends JFrame{
 		getContentPane().add(frameToolBarHelper.toolBar(), BorderLayout.NORTH);
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 		setLocationRelativeTo(null);
+//		pack();
+		trayBoot();
 		setVisible(true);
 		splitPane.setDividerLocation(0.2);
-		//trayBoot();
-		new Thread() {
-			public void run() {
-				trayBoot();
-			}
-		}.start();
+//		new Thread() {
+//			public void run() {
+//				trayBoot();
+//			}
+//		}.start();
 	}
 	/**
 	 * Create the application.
@@ -149,7 +150,7 @@ public class MainFrame extends JFrame{
 				menu.addSeparator();
 				menu.add(about);
 				TrayIcon tray = new TrayIcon(customerComponent.createImage(trayIconFile),"Redis客户端",menu);
-				tray.setImageAutoSize(false);
+				tray.setImageAutoSize(true);
 				SystemTray.getSystemTray().add(tray);
 			} catch (AWTException e) {
 				logger.error("AWTException:{}", e.getMessage());
